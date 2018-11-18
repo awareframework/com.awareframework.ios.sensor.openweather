@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'com.awareframework.ios.sensor.openweather_Example' do
+  pod 'com.awareframework.ios.sensor.openweather', :path => '../'
+
+  target 'com.awareframework.ios.sensor.openweather_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
