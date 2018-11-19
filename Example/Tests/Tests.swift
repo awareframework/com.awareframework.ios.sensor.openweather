@@ -1,5 +1,5 @@
 import XCTest
-import com.awareframework.ios.sensor.openweather
+// import com.awareframework.ios.sensor.openweather
 
 class Tests: XCTestCase {
     
