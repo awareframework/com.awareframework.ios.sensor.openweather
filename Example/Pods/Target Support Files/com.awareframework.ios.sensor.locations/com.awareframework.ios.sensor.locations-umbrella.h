@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double com_aware_ios_sensor_coreVersionNumber;
-FOUNDATION_EXPORT const unsigned char com_aware_ios_sensor_coreVersionString[];
+FOUNDATION_EXPORT double com_awareframework_ios_sensor_locationsVersionNumber;
+FOUNDATION_EXPORT const unsigned char com_awareframework_ios_sensor_locationsVersionString[];
 

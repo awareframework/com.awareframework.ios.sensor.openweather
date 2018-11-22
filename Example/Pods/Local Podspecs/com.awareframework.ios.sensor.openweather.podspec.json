@@ -1,6 +1,6 @@
 {
   "name": "com.awareframework.ios.sensor.openweather",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "summary": "A short description of com.awareframework.ios.sensor.openweather.",
   "description": "TODO: Add long description of the pod here.",
   "homepage": "https://github.com/awareframework/com.awareframework.ios.sensor.openweather",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/awareframework/com.awareframework.ios.sensor.openweather.git",
-    "tag": "0.1.0"
+    "tag": "0.1.1"
   },
   "platforms": {
     "ios": "10.0"
@@ -21,10 +21,10 @@
   "swift_version": "4.0",
   "source_files": "com.awareframework.ios.sensor.openweather/Classes/**/*",
   "dependencies": {
-    "com.aware.ios.sensor.core": [
+    "com.awareframework.ios.sensor.core": [
 
     ],
-    "com.aware.ios.sensor.locations": [
+    "com.awareframework.ios.sensor.locations": [
 
     ]
   }

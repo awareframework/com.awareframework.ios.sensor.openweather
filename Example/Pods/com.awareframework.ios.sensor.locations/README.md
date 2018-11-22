@@ -1,9 +1,10 @@
-# com.aware.ios.sensor.locations
+# Aware Locations
 
-[![CI Status](https://img.shields.io/travis/tetujin/com.aware.ios.sensor.locations.svg?style=flat)](https://travis-ci.org/tetujin/com.aware.ios.sensor.locations)
-[![Version](https://img.shields.io/cocoapods/v/com.aware.ios.sensor.locations.svg?style=flat)](https://cocoapods.org/pods/com.aware.ios.sensor.locations)
-[![License](https://img.shields.io/cocoapods/l/com.aware.ios.sensor.locations.svg?style=flat)](https://cocoapods.org/pods/com.aware.ios.sensor.locations)
-[![Platform](https://img.shields.io/cocoapods/p/com.aware.ios.sensor.locations.svg?style=flat)](https://cocoapods.org/pods/com.aware.ios.sensor.locations)
+[![CI Status](https://img.shields.io/travis/tetujin/com.awareframework.ios.sensor.locations.svg?style=flat)](https://travis-ci.org/tetujin/com.awareframework.ios.sensor.locations)
+[![Version](https://img.shields.io/cocoapods/v/com.awareframework.ios.sensor.locations.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.locations)
+[![License](https://img.shields.io/cocoapods/l/com.awareframework.ios.sensor.locations.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.locations)
+[![Platform](https://img.shields.io/cocoapods/p/com.awareframework.ios.sensor.locations.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.locations)
+
 
 ## Requirements
 iOS 10 or later.
@@ -15,14 +16,14 @@ com.aware.ios.sensor.locations is available through [CocoaPods](https://cocoapod
 1. To install it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'com.aware.ios.sensor.locations'
+pod 'com.awareframework.ios.sensor.locations'
 ```
 
 2. Open your project ( *.xcworkspace ) and add `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationWhenInUseUsageDescription` to Info.plist.
 
 3. Import com.aware.ios.sensor.locations library into your source code.
 ```swift
-import com.aware.ios.sensor.locations
+import com.awareframework.ios.sensor.locations
 ```
 
 ## Example usage
@@ -44,8 +45,8 @@ locationSensor?.stop()
 ```swift
 class Observer:LocationsObserver {
     func onLocationChanged(data: LocationsData) {
-        // your code here
-    }
+    // your code here
+}
 }
 ```
 

@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import com_aware_ios_sensor_core
+import com_awareframework_ios_sensor_core
 
 public class LocationsData: AwareObject {
     public static var TABLE_NAME = "locationsData"

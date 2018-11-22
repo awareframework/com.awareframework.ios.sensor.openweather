@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0930"
+   LastUpgradeVersion = "1010"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2A49FBAA02D8EC5AB5AF1DB0FC7CB1EA"
+               BlueprintIdentifier = "3D6D7D398DEC2342FE4DCB0CD174CB1D"
                BuildableName = "com_awareframework_ios_sensor_openweather.framework"
                BlueprintName = "com.awareframework.ios.sensor.openweather"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2A49FBAA02D8EC5AB5AF1DB0FC7CB1EA"
+            BlueprintIdentifier = "3D6D7D398DEC2342FE4DCB0CD174CB1D"
             BuildableName = "com_awareframework_ios_sensor_openweather.framework"
             BlueprintName = "com.awareframework.ios.sensor.openweather"
             ReferencedContainer = "container:Pods.xcodeproj">

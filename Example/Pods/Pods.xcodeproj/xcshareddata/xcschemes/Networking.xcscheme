@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0930"
+   LastUpgradeVersion = "1010"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3AC06EC9902B3D850059DC9674F49323"
+               BlueprintIdentifier = "4E90C6A71AEB3859DA999CF7CE0B3852"
                BuildableName = "Networking.framework"
                BlueprintName = "Networking"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3AC06EC9902B3D850059DC9674F49323"
+            BlueprintIdentifier = "4E90C6A71AEB3859DA999CF7CE0B3852"
             BuildableName = "Networking.framework"
             BlueprintName = "Networking"
             ReferencedContainer = "container:Pods.xcodeproj">

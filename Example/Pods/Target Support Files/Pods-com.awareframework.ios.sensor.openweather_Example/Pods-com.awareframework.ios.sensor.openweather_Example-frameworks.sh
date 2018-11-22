@@ -148,8 +148,8 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/Realm/Realm.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/com.aware.ios.sensor.core/com_aware_ios_sensor_core.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/com.aware.ios.sensor.locations/com_aware_ios_sensor_locations.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/com.awareframework.ios.sensor.core/com_awareframework_ios_sensor_core.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/com.awareframework.ios.sensor.locations/com_awareframework_ios_sensor_locations.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/com.awareframework.ios.sensor.openweather/com_awareframework_ios_sensor_openweather.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
@@ -158,8 +158,8 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/Realm/Realm.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/com.aware.ios.sensor.core/com_aware_ios_sensor_core.framework"
-  install_framework "${BUILT_PRODUCTS_DIR}/com.aware.ios.sensor.locations/com_aware_ios_sensor_locations.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/com.awareframework.ios.sensor.core/com_awareframework_ios_sensor_core.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/com.awareframework.ios.sensor.locations/com_awareframework_ios_sensor_locations.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/com.awareframework.ios.sensor.openweather/com_awareframework_ios_sensor_openweather.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then

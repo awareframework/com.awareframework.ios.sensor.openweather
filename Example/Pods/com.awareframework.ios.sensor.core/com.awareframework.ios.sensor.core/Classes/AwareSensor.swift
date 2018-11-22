@@ -43,15 +43,15 @@ open class AwareSensor: NSObject,ISensorController {
     }
     
     open func start() {
-        print("*** Please orverwrite -start() method! ***");
+        // print("*** Please orverwrite -start() method! ***");
     }
     
     open func stop() {
-        print("*** Please orverwrite -stop() method! ***");
+        // print("*** Please orverwrite -stop() method! ***");
     }
     
     @objc open func sync(force:Bool=false){
-        print("*** Please orverwrite -sync() method! ***");
+        // print("*** Please orverwrite -sync() method! ***");
     }
     
     open func enable() {

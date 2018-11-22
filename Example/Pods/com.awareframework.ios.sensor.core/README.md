@@ -1,12 +1,12 @@
-# com.aware.ios.sensor.core
+# Aware iOS Core
 
-[![CI Status](http://img.shields.io/travis/tetujin/com.aware.ios.sensor.core.svg?style=flat)](https://travis-ci.org/tetujin/com.aware.ios.sensor.core)
-[![Version](https://img.shields.io/cocoapods/v/com.aware.ios.sensor.core.svg?style=flat)](http://cocoapods.org/pods/com.aware.ios.sensor.core)
-[![License](https://img.shields.io/cocoapods/l/com.aware.ios.sensor.core.svg?style=flat)](http://cocoapods.org/pods/com.aware.ios.sensor.core)
-[![Platform](https://img.shields.io/cocoapods/p/com.aware.ios.sensor.core.svg?style=flat)](http://cocoapods.org/pods/com.aware.ios.sensor.core)
+[![CI Status](https://img.shields.io/travis/awareframework/com.awareframework.ios.sensor.core.svg?style=flat)](https://travis-ci.org/awareframework/com.awareframework.ios.sensor.core)
+[![Version](https://img.shields.io/cocoapods/v/com.awareframework.ios.sensor.core.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.core)
+[![License](https://img.shields.io/cocoapods/l/com.awareframework.ios.sensor.core.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.core)
+[![Platform](https://img.shields.io/cocoapods/p/com.awareframework.ios.sensor.core.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.core)
 
 ## Overview
-com.aware.ios.sensor.core provides a basic class for developing your own sensor module on aware framework.
+com.awareframework.ios.sensor.core provides a basic class for developing your own sensor module on aware framework.
 
 ## Example
 
@@ -21,7 +21,7 @@ com.aware.ios.sensor.core is available through [CocoaPods](http://cocoapods.org)
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'com.aware.ios.sensor.core'
+pod 'com.awareframework.ios.sensor.core'
 ```
 
 ### Extending to a new AWARE module

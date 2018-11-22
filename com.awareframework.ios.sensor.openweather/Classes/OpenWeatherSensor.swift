@@ -9,8 +9,8 @@ import UIKit
 import Foundation
 import SwiftyJSON
 import CoreLocation
-import com_aware_ios_sensor_core
-import com_aware_ios_sensor_locations
+import com_awareframework_ios_sensor_core
+import com_awareframework_ios_sensor_locations
 
 extension Notification.Name {
     public static let actionAwareOpenWeather      = Notification.Name(OpenWeatherSensor.ACTION_AWARE_OPENWEATHER)
