@@ -1,0 +1,6 @@
+framework module com_aware_ios_sensor_locations {
+  umbrella header "com.aware.ios.sensor.locations-umbrella.h"
+
+  export *
+  module * { export * }
+}

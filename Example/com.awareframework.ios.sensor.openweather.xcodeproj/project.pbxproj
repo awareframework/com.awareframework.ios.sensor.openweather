@@ -539,6 +539,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 421ACEB0ED914CA26B89D8A1 /* Pods-com.awareframework.ios.sensor.openweather_Tests.debug.xcconfig */;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -561,6 +562,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AE56C8119F53C06EF07E9941 /* Pods-com.awareframework.ios.sensor.openweather_Tests.release.xcconfig */;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
