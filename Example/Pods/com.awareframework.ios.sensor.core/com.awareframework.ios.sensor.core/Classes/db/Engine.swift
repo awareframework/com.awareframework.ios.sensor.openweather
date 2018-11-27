@@ -102,64 +102,64 @@ open class Engine: EngineProtocal {
     //////////////
     
     open func getAll( ) -> Array<Any>{
-        print("Please orverwrite -getAll()")
+        // print("Please orverwrite -getAll()")
         return Array<Any>()
     }
     
     open func findById(_ id: String) -> Any {
-        print("Please orverwrite -findById(id)")
+        // print("Please orverwrite -findById(id)")
         return Object()
     }
     
     open func save (_ data:AwareObject, _ tableName:String){
-        print("Please orverwrite -save(objects)")
+        // print("Please orverwrite -save(objects)")
     }
     
     open func save (_ data:Array<AwareObject>, _ tableName:String){
-        print("Please orverwrite -save(objects)")
+        // print("Please orverwrite -save(objects)")
     }
     
     public func fetch(_ tableName: String) -> Any? {
-        print("Please orverwrite -fetch(tableName)")
+        // print("Please orverwrite -fetch(tableName)")
         return self.fetch(tableName, nil)
     }
     
     public func fetch(_ tableName: String, _ filter: String?) -> Any? {
-        print("Please orverwrite -fetch(tableName)")
+        // print("Please orverwrite -fetch(tableName)")
         return self.fetch(tableName, nil, filter)
     }
     
     public func fetch(_ tableName: String, _ objectType: Object.Type?, _ filter: String?) -> Any? {
-        print("Please orverwrite -fetc(type:fileter)")
+        // print("Please orverwrite -fetc(type:fileter)")
         return nil
     }
 
     open func remove(_ data:AwareObject, _ tableName:String) {
-        print("Please orverwrite -remove(data)")
+        // print("Please orverwrite -remove(data)")
     }
     
     open func remove(_ data:Array<AwareObject>, _ tableName:String) {
-        print("Please orverwrite -remove(data)")
+        // print("Please orverwrite -remove(data)")
     }
     
     open func removeAll() {
-        print("Please overwrite -removeAll()")
+        // print("Please overwrite -removeAll()")
     }
     
     open func startSync(_ tableName:String, _ syncConfig:DbSyncConfig){
-        print("Please orverwirte -startSync(tableName:syncConfig)")
+        // print("Please orverwirte -startSync(tableName:syncConfig)")
     }
     
     open func startSync(_ tableName:String, _ objectType: Object.Type?, _ syncConfig:DbSyncConfig){
-        print("Please overwrite -startSync(tableName:objectType:syncConfig)")
+        // print("Please overwrite -startSync(tableName:objectType:syncConfig)")
     }
     
     open func stopSync() {
-        print("Please orverwirte -stopSync()")
+        // print("Please orverwirte -stopSync()")
     }
     
     open func close() {
-        print("Please orverwirte -close()")
+        // print("Please orverwirte -close()")
     }
     
 }

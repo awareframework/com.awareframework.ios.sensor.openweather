@@ -1,11 +1,11 @@
-# Aware Open Weather
+# AWARE: Open Weather
 
 [![CI Status](https://img.shields.io/travis/awareframework/com.awareframework.ios.sensor.openweather.svg?style=flat)](https://travis-ci.org/awareframework/com.awareframework.ios.sensor.openweather)
 [![Version](https://img.shields.io/cocoapods/v/com.awareframework.ios.sensor.openweather.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.openweather)
 [![License](https://img.shields.io/cocoapods/l/com.awareframework.ios.sensor.openweather.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.openweather)
 [![Platform](https://img.shields.io/cocoapods/p/com.awareframework.ios.sensor.openweather.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.openweather)
 
-This plugin uses Google Fused Location in low power mode and OpenWeather API to provide the weather conditions where the user is.
+The Open Weather plugin allows us to collect weather information based on your location. The weather data comes from Open Weather API. For using the API, you need to prepare your API KEY on [https://openweathermap.org/api](https://openweathermap.org/api).
 
 ## Requirements
 iOS 10 or later
@@ -18,7 +18,7 @@ com.awareframework.ios.sensor.openweather is available through [CocoaPods](https
 pod 'com.awareframework.ios.sensor.openweather'
 ```
 
-2. com_aware_ios_sensor_activityrecognition  library into your source code.
+2. com_aware_ios_sensor_openweather  library into your source code.
 ```swift
 import com_awareframework_ios_sensor_openweather
 ```

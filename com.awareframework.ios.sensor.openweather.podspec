@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = 'com.awareframework.ios.sensor.openweather'
   s.version       = '0.1.2'
-  s.summary          = 'A short description of com.awareframework.ios.sensor.openweather.'
+  s.summary          = 'An OpenWeather Sensor Module for AWARE Framework'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+The Open Weather plugin allows us to collect weather information based on your location. The weather data comes from Open Weather API. For using the API, you need to prepare your API KEY on [https://openweathermap.org/api](https://openweathermap.org/api).
                        DESC
 
   s.homepage         = 'https://github.com/awareframework/com.awareframework.ios.sensor.openweather'
@@ -42,7 +42,7 @@ TODO: Add long description of the pod here.
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
   
-  s.dependency 'com.awareframework.ios.sensor.core'
+  s.dependency 'com.awareframework.ios.sensor.core', '~> 0.3.1'
   s.dependency 'com.awareframework.ios.sensor.locations'
     
 end

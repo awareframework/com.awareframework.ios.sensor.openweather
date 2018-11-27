@@ -173,7 +173,9 @@ open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionD
     }
     
     open func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        print("\(#function):\(dataTask.taskIdentifier)")
+        if config.debug{
+            print("\(#function):\(dataTask.taskIdentifier)")
+        }
         self.receivedData.append(data)
     }
     

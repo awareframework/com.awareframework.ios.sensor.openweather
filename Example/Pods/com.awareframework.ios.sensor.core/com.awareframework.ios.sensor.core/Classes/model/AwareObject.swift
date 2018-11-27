@@ -15,7 +15,7 @@ open class AwareObject: Object {
     @objc dynamic public var deviceId: String = AwareUtils.getCommonDeviceId()
     @objc dynamic public var label : String = ""
     @objc dynamic public var timezone: Int = AwareUtils.getTimeZone()
-    @objc dynamic public var os: String = "iOS"
+    @objc dynamic public var os: String = "ios"
     @objc dynamic public var jsonVersion: Int = 0
     
     open func toDictionary() -> Dictionary<String, Any> {

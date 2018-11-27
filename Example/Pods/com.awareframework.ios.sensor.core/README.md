@@ -1,4 +1,4 @@
-# Aware iOS Core
+# AWARE: Core 
 
 [![CI Status](https://img.shields.io/travis/awareframework/com.awareframework.ios.sensor.core.svg?style=flat)](https://travis-ci.org/awareframework/com.awareframework.ios.sensor.core)
 [![Version](https://img.shields.io/cocoapods/v/com.awareframework.ios.sensor.core.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.core)
@@ -13,7 +13,7 @@ com.awareframework.ios.sensor.core provides a basic class for developing your ow
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
 ## Requirements
-iOS 10 or later OS.
+iOS 10 or later.
 
 ## Installation
 
@@ -31,7 +31,7 @@ pod 'com.awareframework.ios.sensor.core'
 4. Sync local-database with remote-database
 
 ## Author
-Yuuki Nishiyama, tetujin@ht.sfc.keio.ac.jp
+Yuuki Nishiyama, yuuki.nishiyama@oulu.fi
 
 ## License
 Copyright (c) 2014 AWARE Mobile Context Instrumentation Middleware/Framework (http://www.awareframework.com)

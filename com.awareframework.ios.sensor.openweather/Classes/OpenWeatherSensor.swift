@@ -46,19 +46,21 @@ public class OpenWeatherSensor: AwareSensor, LocationsObserver {
         public var interval:Int = 15 // min
         public var apiKey:String?    // http://openweathermap.org/
         public var unit = "metric"   // metric or imperial
+        
         public override init() {}
         
-        public init( _ dict:Dictionary<String,Any>) {
+        public override func set(config: Dictionary<String, Any>) {
+            super.set(config: config)
             
-            if let intervalMin = dict["interval"] as? Int {
+            if let intervalMin = config["interval"] as? Int {
                 self.interval = intervalMin
             }
             
-            if let api = dict["apiKey"] as? String {
+            if let api = config["apiKey"] as? String {
                 self.apiKey = api
             }
             
-            if let unit = dict["unit"] as? String {
+            if let unit = config["unit"] as? String {
                 if unit == "metric" {
                     self.unit = unit
                 }else if unit == "imperial" {
@@ -73,7 +75,7 @@ public class OpenWeatherSensor: AwareSensor, LocationsObserver {
         }
     }
     
-    override convenience init() {
+    public override convenience init() {
         self.init(OpenWeatherSensor.Config())
     }
     
