@@ -6,10 +6,21 @@ before_install:
 - gem install cocoapods
 - pod repo update
 - pod install --project-directory=Example
-
 script:
-  - set -o pipefail && xcodebuild test -enableCodeCoverage YES -workspace Example/com.awareframework.ios.sensor.openweather.xcworkspace -scheme com.awareframework.ios.sensor.openweather-Example -sdk iphonesimulator12.1 -destination OS=12.1,name="iPhone X" ONLY_ACTIVE_ARCH=NO CODE_SIGNING_REQUIRED=NO -allowProvisioningUpdates | XCPRETTY
-  # - pod lib lint com.awareframework.ios.sensor.openweather.podspec --allow-warnings
-
+- set -o pipefail && xcodebuild test -enableCodeCoverage YES -workspace Example/com.awareframework.ios.sensor.openweather.xcworkspace
+  -scheme com.awareframework.ios.sensor.openweather-Example -sdk iphonesimulator12.1
+  -destination OS=12.1,name="iPhone X" ONLY_ACTIVE_ARCH=NO CODE_SIGNING_REQUIRED=NO
+  -allowProvisioningUpdates | XCPRETTY
+deploy:
+  provider: script
+  script: "./scripts/release.sh"
+  on:
+    tags: true
 after_success:
 - echo 'success!'
+env:
+  global:
+  - secure: EpVBU1PKA8lKRH/1HWcL8snrsmMaSFRkSz8qWnUdQNjxyJwYeiEx2DvwC1WlEGoCG/d/+SLdbGbVMu3F/ucvTXSNRdQU8JYwzB9rJEEEWAgKdaHsB+dME/HKROVIXxTV46XudizyXgBF0YU5/Ciuz1a4ajYtMHZOu2DaEBWV0xsuezSrQedHxXhL/2leMvyyXfgTHLIjIxmF7UWD10MaAH2XpINlmlYd5N/SJOuvYAeLj64gwOL41hPPc/mhl0zs/ayoWh9EqU1Rki/CSbUMTbNr0Mwuv0szcZo6wPhCYSC95uy6r5QLYizau0TYOCrWe3GiJL+GnI5t7+kVwZIuFqSLzOj7tOgu492/o/eSyYfu/hPaAwqXHhcrgQBjqSOcmm9J0uPrRnXrjHNHrGRaQxmBPC7tMLJc2354z7lRGMLSpuC9u3q+/RvLsizOJeQIIFegY+i5kNyTwIYyUwTttBF2heL06POXSF3YusJB57pBDjJNXz9yv0WMxOAEXh83Ll3xSTO6A+DJEGeuVRRA8DYF/nnnDddv39C3XAqH+563r0sYXHMFoYbTcjAzEbc6y23i+6jVlYANaOt5CNDh+DNx2Xy7okIoh/NqLYZpOrkN/5xB4rp9YmIxPTxvWFOlo+aQxu3lljoybUV9Gc9OvXKewRQzJcaF+SxYpKO3+b8=
+notifications:
+  slack:
+    secure: gzMycC7M+0l3G2W3U/QMiLwVd4CcuT4orjWtrChcU+0vVJzh7LJ57d7Y5CbGlZ+TPTxDM1SBiGVD7L5rgmk+MKhZUBBJih6vVWEFzxmGYNLPbPOvkVTaJedHa3uCws8ewY1HDgYC1sU7ItrqU5Lq8Qk/d6wY3XRpfio+JYWLBBL4Q+ZUaym1ekBsh3LnGe038DDOzQO2us5kgixoOqKZI2xJorRWq21YSMrBo38iVG1wlPYHGh34GTgAckHgE3MzIhWJovQTnpEnb7lLJxJkoUt4biIRq1XQPLyFcYQ8R6ojgOeUMaG1nRJNqQbmrOfzrtm6dSHj/5XxwQgsKKYO4Xignor8wzJtU2w4MKNd44N6cwGd61kl1RMsmZT9KdwHGnnroo7jxd0XtXd5bpuxzgq+5r+4nIsdDeciwVLCq3UM6hQP8mODxhPDh+FbXCf0Kq8IlFSyuWSfQ3899BmB9wsdwtJGgJGfxHb7SfVpm3iw4JsN35fOz3lJNnhIzX3WQILcYuvTEeAYcyQ/TpctSk7aFohS7ekCk/JeQhKZY/1qT3q+FvGMrBHwqFyTn9aNluGfxmC02HBEEk6j3X9pXxXGgZhyRH5bF1IDX5vppYgazJXrcccp6/3QQRSNmqcwFkesHBlZlPVlNxakZrZQ8/vTPfuIoS0+FaLjyjHRBQM=
