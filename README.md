@@ -38,8 +38,8 @@ Class to hold the configuration of the sensor.
 #### Fields
 + `sensorObserver: OpenWeatherObserver`: Callback for live data updates.
 * `interval: Int`: How frequently to fetch weather information (in minutes), (default = 60)
-* `units: String`: imperial or metric (default = metric)
-* `apiKey: String`: OpenWeather API key. Get your free API key from [openweathermap.org](https://openweathermap.org/api) (default = "")
+* `units: String`: imperial or metric (default = "metric")
+* `apiKey: String`: OpenWeather API key. Get your free API key from [openweathermap.org](https://openweathermap.org/api) (default = `null`)
 + `enabled: Boolean` Sensor is enabled or not. (default = `false`)
 + `debug: Boolean` enable/disable logging to Xcode console. (default = `false`)
 + `label: String` Label for the data. (default = "")
