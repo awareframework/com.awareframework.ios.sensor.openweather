@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'com.awareframework.ios.sensor.openweather'
-  s.version       = '0.2.1'
+  s.version       = '0.2.2'
   s.summary          = 'An OpenWeather Sensor Module for AWARE Framework'
 
 # This description is used to generate tags and improve search results.
@@ -42,7 +42,7 @@ The Open Weather plugin allows us to collect weather information based on your l
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
   
-  s.dependency 'com.awareframework.ios.sensor.core', '~> 0.3.1'
+  s.dependency 'com.awareframework.ios.sensor.core', '~> 0.3.3'
   s.dependency 'com.awareframework.ios.sensor.locations'
     
 end

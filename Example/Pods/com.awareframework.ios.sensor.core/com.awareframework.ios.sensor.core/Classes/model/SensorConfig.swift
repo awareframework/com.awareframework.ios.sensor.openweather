@@ -48,6 +48,14 @@ open class SensorConfig{
         
         dbEncryptionKey = config["dbEncryptionKey"] as? String
 
+        if let dbType = config["dbType"] as? Int {
+            if dbType == 0 {
+                self.dbType = DatabaseType.NONE
+            }else if dbType == 1 {
+                self.dbType = DatabaseType.REALM
+            }
+        }
+        
         if let dbType = config["dbType"] as? DatabaseType {
             self.dbType = dbType
         }

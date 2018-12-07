@@ -51,7 +51,7 @@ open class Engine: EngineProtocal {
     }
     
     open class EngineConfig{
-        open var type: DatabaseType = DatabaseType.REALM
+        open var type: DatabaseType = DatabaseType.NONE
         open var encryptionKey:String?
         open var path:String?
         open var host:String?

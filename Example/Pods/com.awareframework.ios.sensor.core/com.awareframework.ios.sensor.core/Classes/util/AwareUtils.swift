@@ -33,13 +33,20 @@ public class AwareUtils{
         }
     }
     
-//    public static func isWifi(){
-//        if let reachability = Reachability() {
-//            print(reachability.connection == .wifi)
-//            print(reachability.connection == .cellular)
-//            print(reachability.connection == .none)
-//        }
-//    }
+    /**
+     * Remove "http://" and "https://" if the protocol is included in the "host" name.
+     */
+    public static func cleanHostName(_ hostName:String) -> String {
+        var newHostName = hostName;
+        if let range = newHostName.range(of: "http://") {
+            newHostName.removeSubrange(range)
+        }
+        
+        if let range = newHostName.range(of: "https://") {
+            newHostName.removeSubrange(range)
+        }
+        return newHostName
+    }
 }
 
 

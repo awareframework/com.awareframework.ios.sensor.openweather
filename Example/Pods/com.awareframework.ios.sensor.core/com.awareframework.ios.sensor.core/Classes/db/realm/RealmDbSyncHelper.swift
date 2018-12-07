@@ -86,7 +86,9 @@ open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionD
                             print(requestStr)
                         }
                         
-                        let url = URL.init(string: "https://"+self.host+"/insert/")
+                        let hostName = AwareUtils.cleanHostName(self.host)
+                        
+                        let url = URL.init(string: "https://"+hostName+"/insert/")
                         if let unwrappedUrl = url, let session = self.urlSession {
                             var request = URLRequest.init(url: unwrappedUrl)
                             request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
@@ -130,37 +132,66 @@ open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionD
     open func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         // print(#function)
         var responseState = false
+        
         if let unwrappedError = error {
             if config.debug { print("failed: \(unwrappedError)") }
-            session.invalidateAndCancel()
         }else{
-            if config.debug { print("succeded: ") }
-            session.finishTasksAndInvalidate()
-            DispatchQueue.main.sync {
-                engine.remove(uploadingObjects, "")
+            /**
+             * TODO: this is an error handler
+             * aware-server-node ( https://github.com/awareframework/aware-server-node/blob/master/handlers/errorHandlers.js )
+             * generates 201 even if the query is wrong ...
+             * {"status":404,"message":"Not found"} with error code 201
+             *
+             * The value should be as follows:
+             *{"status":false,"message":"Not found"} with error code 404
+             */
+            do {
+                let json = try JSON.init(data: receivedData)
+                if json["status"] == 404 {
+                    responseState = false
+                }else{
+                    // normal condition
+                    responseState = true
+                }
+            }catch {
+                if ( config.debug ) {
+                    print("[\(tableName)]: Error: A JSON convert error: \(error)")
+                }
+                // An upload task is done correctly.
+                responseState = true
             }
-            responseState = true
         }
         
         let response = String.init(data: receivedData, encoding: .utf8)
         if let unwrappedResponse = response{
             print(unwrappedResponse)
         }
+        
+        if (responseState){
+            if config.debug { print("[\(tableName)] Success: A sync task is done correctly.") }
+            session.finishTasksAndInvalidate()
+            DispatchQueue.main.sync {
+                engine.remove(uploadingObjects, "")
+            }
+        }else{
+            session.invalidateAndCancel()
+        }
+        
         receivedData = Data()
         
         if responseState {
-            // the sync process was succeed
+            // A sync process is succeed
             if endFlag {
-                if config.debug { print("[\(tableName)] All sync tasks were done!!!") }
+                if config.debug { print("[\(tableName)] All sync tasks is done!!!") }
             }else{
-                if config.debug { print("[\(tableName)] A sync task was done. Execute a next sync task.") }
+                if config.debug { print("[\(tableName)] A sync task is done. Execute a next sync task.") }
                 DispatchQueue.main.asyncAfter( deadline: DispatchTime.now() + 1 ) {
                     self.run()
                 }
             }
         }else{
-            // the sync process was failed
-            if config.debug { print("[\(tableName)] A sync task was faild.") }
+            //A sync process is failed
+            if config.debug { print("[\(tableName)] A sync task is faild.") }
         }
     }
     

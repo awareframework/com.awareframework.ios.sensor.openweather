@@ -21,13 +21,13 @@ extension Notification.Name {
 }
 
 extension OpenWeatherSensor{
-    public static let ACTION_AWARE_OPENWEATHER       = "ACTION_AWARE_OPENWEATHER"
-    public static let ACTION_AWARE_OPENWEATHER_START = "ACTION_AWARE_OPENWEATHER_START"
-    public static let ACTION_AWARE_OPENWEATHER_STOP  = "ACTION_AWARE_OPENWEATHER_STOP"
-    public static let ACTION_AWARE_OPENWEATHER_SYNC  = "ACTION_AWARE_OPENWEATHER_SYNC"
-    public static let ACTION_AWARE_OPENWEATHER_SET_LABEL = "ACTION_AWARE_OPENWEATHER_SET_LABEL"
+    public static let ACTION_AWARE_OPENWEATHER       = "com.awareframework.ios.sensor.openweather"
+    public static let ACTION_AWARE_OPENWEATHER_START = "com.awareframework.ios.sensor.openweather.ACTION_AWARE_OPENWEATHER_START"
+    public static let ACTION_AWARE_OPENWEATHER_STOP  = "com.awareframework.ios.sensor.openweather.ACTION_AWARE_OPENWEATHER_STOP"
+    public static let ACTION_AWARE_OPENWEATHER_SYNC  = "com.awareframework.ios.sensor.openweather.ACTION_AWARE_OPENWEATHER_SYNC"
+    public static let ACTION_AWARE_OPENWEATHER_SET_LABEL = "com.awareframework.ios.sensor.openweather.ACTION_AWARE_OPENWEATHER_SET_LABEL"
     public static var EXTRA_LABEL  = "label"
-    public static let TAG = "com.awareframework.openweather"
+    public static let TAG = "com.awareframework.ios.sensor.openweather"
 }
 
 public protocol OpenWeatherObserver {
@@ -44,8 +44,29 @@ public class OpenWeatherSensor: AwareSensor, LocationsObserver {
         
         public var sensorObserver:OpenWeatherObserver?
         public var interval:Int = 15 // min
+        {
+            didSet{
+                if self.interval < 1 {
+                    print("[OpenWeatherSensor][Illegal Parameter] The 'interval' value has to be gratter than 0.",
+                          "This parameter ('\(self.interval)') is ignored.")
+                    self.interval = oldValue
+                }
+            }
+        }
+        
         public var apiKey:String?    // http://openweathermap.org/
         public var unit = "metric"   // metric or imperial
+        {
+            didSet{
+                if self.unit == "metric" || self.unit == "imperial" {
+                    // ok
+                }else{
+                    print("[OpenWeatherSensor][Illegal Parameter] You can set 'metric' or 'imperial' as the unit.",
+                          "This parameter ('\(self.unit)') is ignored.")
+                    self.unit = oldValue
+                }
+            }
+        }
         
         public override init() {}
         
@@ -147,6 +168,13 @@ public class OpenWeatherSensor: AwareSensor, LocationsObserver {
             self.notificationCenter.post(name: .actionAwareOpenWeatherSync, object: nil)
         }
     }
+    
+    public func set(label:String){
+        self.CONFIG.label = label
+        self.notificationCenter.post(name: .actionAwareOpenWeatherSetLabel,
+                                     object: nil,
+                                     userInfo: [OpenWeatherSensor.EXTRA_LABEL:label])
+    }
 }
 
 public class OpenWeatherApi: URLSessionDataTask, URLSessionDelegate, URLSessionDataDelegate, URLSessionTaskDelegate {
@@ -172,11 +200,12 @@ public class OpenWeatherApi: URLSessionDataTask, URLSessionDelegate, URLSessionD
     }
     
     public func getWeatherData(completionHandler: @escaping (_ result:Data) -> ()){
+        
         self.complition = completionHandler
         self.urlSession = {
             let sessionConfig = URLSessionConfiguration.background(withIdentifier: "com.awareframework.ios.sensor.openweather.identifier.getdata")
             sessionConfig.allowsCellularAccess = true
-            sessionConfig.sharedContainerIdentifier = "com.awareframework.ios.sensor.openweather.identifier"
+            // sessionConfig.sharedContainerIdentifier = "com.awareframework.ios.sensor.openweather.identifier"
             sessionConfig.timeoutIntervalForRequest = 30
             sessionConfig.timeoutIntervalForResource = 30
             sessionConfig.httpMaximumConnectionsPerHost = 5
@@ -191,8 +220,13 @@ public class OpenWeatherApi: URLSessionDataTask, URLSessionDelegate, URLSessionD
             request.timeoutInterval = 30
             request.httpMethod = "GET"
             request.allowsCellularAccess = true
-            let task = session.dataTask(with: request)
-            task.resume()
+            session.getAllTasks { (tasks) in
+                for task in tasks {
+                    task.cancel()
+                }
+                let task = session.dataTask(with: request)
+                task.resume()
+            }
         }
     }
 
@@ -206,7 +240,7 @@ public class OpenWeatherApi: URLSessionDataTask, URLSessionDelegate, URLSessionD
                 if debug{ print( OpenWeatherSensor.TAG, "ResponseDisposition.allow") }
             }else{
                 completionHandler(URLSession.ResponseDisposition.cancel);
-                if debug{ print( OpenWeatherSensor.TAG, "ResponseDisposition.allow") }
+                if debug{ print( OpenWeatherSensor.TAG, "ResponseDisposition.cancel") }
             }
         }
     }

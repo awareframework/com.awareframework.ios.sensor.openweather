@@ -87,9 +87,8 @@ public class LocationsSensor: AwareSensor{
         // var frequencyNetwork: Int = 300;
         // var minNetworkAccuracy: Int = 1500;
         
-        public override init() {}
-        
-        public init(_ config:Dictionary<String,Any>){
+        public override func set(config: Dictionary<String, Any>) {
+            super.set(config: config)
             if let status = config["statusGps"] as? Bool {
                 statusGps = status
             }
@@ -117,7 +116,7 @@ public class LocationsSensor: AwareSensor{
         }
     }
     
-    override convenience init(){
+    public override convenience init(){
         self.init(LocationsSensor.Config())
     }
     
@@ -207,7 +206,7 @@ public class LocationsSensor: AwareSensor{
     public override func sync(force: Bool = false) {
         if CONFIG.debug { print(LocationsSensor.TAG,"Start database sync") }
         if let enging = self.dbEngine {
-            enging.startSync(LocationsData.TABLE_NAME, DbSyncConfig().apply(closure: { config in
+            enging.startSync(LocationsData.TABLE_NAME, LocationsData.self, DbSyncConfig().apply(closure: { config in
                 config.debug = CONFIG.debug
             }))
         }

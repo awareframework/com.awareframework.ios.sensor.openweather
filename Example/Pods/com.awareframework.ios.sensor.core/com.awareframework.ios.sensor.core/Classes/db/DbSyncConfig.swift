@@ -43,6 +43,10 @@ public class DbSyncConfig {
             self.skipSyncedData = skipSyncedData
         }
         
+        if let keepLastData = config["keepLastData"] as? Bool {
+            self.keepLastData = keepLastData
+        }
+        
         self.deviceId = config["deviceId"] as? String
         
         if let debug = config["debug"] as? Bool {

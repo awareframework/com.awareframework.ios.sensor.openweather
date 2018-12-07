@@ -75,6 +75,10 @@ open class RealmEngine: Engine {
         }
     }
     
+    open override func startSync(_ tableName: String, _ syncConfig: DbSyncConfig) {
+        self.startSync(tableName, nil, syncConfig)
+    }
+    
     open override func startSync(_ tableName: String, _ objectType: Object.Type?, _ syncConfig: DbSyncConfig) {
         if let uwHost = self.config.host, let uwObjType = objectType {
             self.syncHelper = RealmDbSyncHelper.init(engine: self, host: uwHost, tableName: tableName,
@@ -83,7 +87,7 @@ open class RealmEngine: Engine {
                 helper.run()
             }
         }else{
-            print("[Error] 'Host Name' or 'Object Type' is nil. Please check the parapmeters.")
+            print("[Error][\(tableName)] 'Host Name' or 'Object Type' is nil. Please check the parapmeters.")
         }
     }
     

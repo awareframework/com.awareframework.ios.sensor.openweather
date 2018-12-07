@@ -11,12 +11,12 @@ import Reachability
 open class DbSyncManager {
     
     private var timer:Timer?
-    private var CONFIG:DbSyncManagerConfig
+    public var CONFIG:DbSyncManagerConfig
     var TAG:String = "com.aware.manager.sync"
     
     open class DbSyncManagerConfig{
         public init(){}
-        public var syncInterval:Double      = 1
+        public var syncInterval:Double      = 1.0
         public var wifiOnly:Bool            = true
         public var batteryChargingOnly:Bool = false
         public var debug:Bool               = false
@@ -28,7 +28,11 @@ open class DbSyncManager {
         public init(){}
         
         public func setSyncInterval(_ minutes:Double) -> Builder{
-            builderConfig.syncInterval = minutes
+            if minutes > 0 {
+                builderConfig.syncInterval = minutes
+            }else{
+                print("[Error]","[Illegal Parameter]","The interval parameter (minute) has to be more than zero.")
+            }
             return self
         }
         
@@ -139,7 +143,8 @@ open class DbSyncManager {
         }
         
         NotificationCenter.default.post(name: Notification.Name.Aware.dbSyncRequest, object:nil)
-//        for sensor in config.sensors {
+        
+//        for sensor in CONFIG.sensors {
 //            sensor.sync()
 //        }
     }
