@@ -132,6 +132,18 @@ public class OpenWeatherSensor: AwareSensor, LocationsObserver {
             }
         })
     }
+    public func onExitRegion(data: GeofenceData) {
+        
+    }
+    
+    public func onEnterRegion(data: GeofenceData) {
+        
+    }
+    
+    public func onVisit(data: VisitData) {
+        
+    }
+    
     
     public init(_ config:OpenWeatherSensor.Config) {
         super.init()

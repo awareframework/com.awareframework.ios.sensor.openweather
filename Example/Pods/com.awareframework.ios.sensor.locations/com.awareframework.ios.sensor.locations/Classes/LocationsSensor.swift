@@ -12,14 +12,22 @@ import SwiftyJSON
 
 extension Notification.Name {
     public static let actionAwareLocations      = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATIONS)
-    public static let actionAwareLocationStart  = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATION_START)
-    public static let actionAwareLocationStop   = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATION_STOP)
-    public static let actionAwareLocationSync   = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATION_SYNC)
-    public static let actionAwareLocationSetLabel  = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATION_SET_LABEL)
+    public static let actionAwareLocationsStart  = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATIONS_START)
+    public static let actionAwareLocationsStop   = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATIONS_STOP)
+    public static let actionAwareLocationsSync   = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATIONS_SYNC)
+    public static let actionAwareLocationsSetLabel  = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATIONS_SET_LABEL)
+    
+    public static let actionAwareLocationsEnterRegion = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATIONS_ENTER_REGION)
+    public static let actionAwareLocationsExitRegion = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATIONS_EXIT_REGION)
+    
+    public static let actionAwareLocationsVisit = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATIONS_VISIT)
 }
 
 public protocol LocationsObserver {
     func onLocationChanged(data: LocationsData)
+    func onExitRegion(data: GeofenceData)
+    func onEnterRegion(data: GeofenceData)
+    func onVisit(data: VisitData)
 }
 
 public class LocationsSensor: AwareSensor{
@@ -37,47 +45,81 @@ public class LocationsSensor: AwareSensor{
     /**
      * Fired event: New location available
      */
-    public static let ACTION_AWARE_LOCATIONS = "ACTION_AWARE_LOCATIONS"
+    public static let ACTION_AWARE_LOCATIONS = "com.awareframework.ios.sensor.locations"
     
     /**
      * Fired event: GPS location is active
      */
-    public static let ACTION_AWARE_GPS_LOCATION_ENABLED = "ACTION_AWARE_GPS_LOCATION_ENABLED"
+    public static let ACTION_AWARE_GPS_LOCATIONS_ENABLED = "ACTION_AWARE_GPS_LOCATIONS_ENABLED"
     
     /**
      * Fired event: Network location is active
      */
-    public static let ACTION_AWARE_NETWORK_LOCATION_ENABLED = "ACTION_AWARE_NETWORK_LOCATION_ENABLED"
+    public static let ACTION_AWARE_NETWORK_LOCATIONS_ENABLED = "ACTION_AWARE_NETWORK_LOCATIONS_ENABLED"
     
     /**
      * Fired event: GPS location disabled
      */
-    public static let ACTION_AWARE_GPS_LOCATION_DISABLED = "ACTION_AWARE_GPS_LOCATION_DISABLED"
+    public static let ACTION_AWARE_GPS_LOCATIONS_DISABLED = "ACTION_AWARE_GPS_LOCATIONS_DISABLED"
+    
+    public static let ACTION_AWARE_LOCATIONS_ENTER_REGION = "ACTION_AWARE_LOCATION_ENTER_REGION"
+    
+    public static let ACTION_AWARE_LOCATIONS_EXIT_REGION  = "ACTION_AWARE_LOCATION_EXIT_REGION"
+    
+    public static let ACTION_AWARE_LOCATIONS_VISIT  = "ACTION_AWARE_LOCATION_VISIT"
     
     /**
      * Fired event: Network location disabled
      */
-    public static let ACTION_AWARE_NETWORK_LOCATION_DISABLED = "ACTION_AWARE_NETWORK_LOCATION_DISABLED"
+    public static let ACTION_AWARE_NETWORK_LOCATIONS_DISABLED = "ACTION_AWARE_NETWORK_LOCATIONS_DISABLED"
     
-    public static let ACTION_AWARE_LOCATION_START = "com.awareframework.android.sensor.locations.SENSOR_START"
-    public static let ACTION_AWARE_LOCATION_STOP = "com.awareframework.android.sensor.locations.SENSOR_STOP"
+    public static let ACTION_AWARE_LOCATIONS_START = "com.awareframework.ios.sensor.locations.SENSOR_START"
+    public static let ACTION_AWARE_LOCATIONS_STOP = "com.awareframework.ios.sensor.locations.SENSOR_STOP"
     
-    public static let ACTION_AWARE_LOCATION_SET_LABEL = "com.awareframework.android.sensor.locations.SET_LABEL"
+    public static let ACTION_AWARE_LOCATIONS_SET_LABEL = "com.ios.android.sensor.locations.SET_LABEL"
     public static var EXTRA_LABEL = "label"
     
-    public static let ACTION_AWARE_LOCATION_SYNC = "com.awareframework.android.sensor.locations.SENSOR_SYNC"
+    public static let ACTION_AWARE_LOCATIONS_SYNC = "com.awareframework.ios.sensor.locations.SENSOR_SYNC"
     
     
     public class Config:SensorConfig {
         
         public var sensorObserver:LocationsObserver?
-        // var geoFences: String? = nil;
+        public var geoFences: String? = nil; // TODO: convert the value to CLRegion
         public var statusGps = true;
-        public var frequencyGps:   Double = 180;
-        public var minGpsAccuracy: Double = 150;
-        public var expirationTime: Int64  = 300;
+        public var statusLocationVisit = true;
+        public var frequencyGps:   Double = 180 {
+            didSet{
+                if self.frequencyGps <= 0 {
+                    print("[LocationsSensor][Illegal Parameter] The 'frequencyGps' value has to be more than 0. ",
+                          "This parameter (\(self.frequencyGps)) is ignored.")
+                    self.frequencyGps = oldValue
+                }
+            }
+        }
+        public var minGpsAccuracy: Double = 150 {
+            didSet{
+                if self.minGpsAccuracy < 0 {
+                    print("[LocationsSensor][Illegal Parameter] The 'minGpsAccuracy' value has to be greater than or equal to 0. ",
+                          "This parameter (\(self.minGpsAccuracy)) is ignored.")
+                    self.minGpsAccuracy = oldValue
+                }
+            }
+        }
+        
+        public var expirationTime: Int64  = 300 {
+            didSet{
+                if self.expirationTime < 0 {
+                    print("[LocationsSensor][Illegal Parameter] The 'expirationTime' value has to be greater than or equal to 0. ",
+                          "This parameter (\(self.expirationTime)) is ignored.")
+                    self.expirationTime = oldValue
+                }
+            }
+        }
+        
         public var saveAll = false;
-        public var regions:Array<CLRegion>? = nil
+        
+        public var regions:Array<CLRegion> = Array<CLRegion>()
         
         public var accuracy:CLLocationAccuracy? = nil
         
@@ -108,11 +150,57 @@ public class LocationsSensor: AwareSensor{
             if let sAll = config["saveAll"] as? Bool {
                 saveAll = sAll
             }
+            
+            if let locationVisit = config["statusLocationVisit"] as? Bool {
+                statusLocationVisit = locationVisit
+            }
+            
+            /// CLRegion
+            if let regionsArray = config["regions"] as? Array<Dictionary<String,Any>> {
+                for regionDict in regionsArray {
+                    
+                    guard let latitude = regionDict["latitude"] as? Double else {
+                        print("[LocationsSensor][Illegal Parameter] There is no 'latitude' value in the Dictionary<String,Any>")
+                        break
+                    }
+                    
+                    guard let longitude = regionDict["longitude"] as? Double else {
+                        print("[LocationsSensor][Illegal Parameter] There is no 'longitude' value in the Dictionary<String,Any>")
+                        break
+                    }
+                    
+                    guard let radius = regionDict["radius"] as? Double else {
+                        print("[LocationsSensor][Illegal Parameter] There is no 'radius' value in the Dictionary<String,Any>")
+                        break
+                    }
+                    
+                    guard let id = regionDict["id"] as? String else {
+                        print("[LocationsSensor][Illegal Parameter] There is no 'id' value in the Dictionary<String,Any>")
+                        break
+                    }
+                    self.addRegion(latitude: latitude, longitude: longitude, radius: radius, identifier: id)
+                }
+            }
         }
         
         public func apply(closure:(_ config: LocationsSensor.Config ) -> Void ) -> Self {
             closure(self)
             return self
+        }
+        
+        public func addRegion(latitude: Double, longitude: Double, radius: Double, identifier: String){
+            let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            let region = CLCircularRegion(center:center, radius: radius, identifier: identifier)
+            self.regions.append(region)
+        }
+        
+        public func removeRegion(identifier: String){
+            for (index,region) in self.regions.enumerated() {
+                if region.identifier == identifier {
+                    self.regions.remove(at: index)
+                    self.removeRegion(identifier: identifier)
+                }
+            }
         }
     }
     
@@ -156,51 +244,27 @@ public class LocationsSensor: AwareSensor{
         
         if CONFIG.debug { print(LocationsSensor.TAG,"Start location services") }
         self.startLocationServices()
-        self.notificationCenter.post(name: .actionAwareLocationStart, object: nil)
 
         if self.timer == nil {
-            self.timer = Timer.scheduledTimer(withTimeInterval: CONFIG.frequencyGps, repeats: true, block: { (timer) in
-                let now = Date()
-                if let lastLocation = self.LAST_DATA {
-                    // check timeout (second)
-                    let currentTimestamp = now.timeIntervalSince1970
-                    let lastLocationTimestamp = lastLocation.timestamp.timeIntervalSince1970
-                    if self.CONFIG.debug {
-                        print(LocationsSensor.TAG, "Passed         : \(Int64(currentTimestamp - lastLocationTimestamp)) second")
-                        print(LocationsSensor.TAG, "Expiration Time: \(self.CONFIG.expirationTime) second")
-                    }
-                    if Int64(currentTimestamp - lastLocationTimestamp) < self.CONFIG.expirationTime {
-                        if self.CONFIG.debug { print(LocationsSensor.TAG, "Save the last location data") }
-                        self.saveLocationsData(locations: [lastLocation], eventTime: now)
-                    }else{
-                        if let currentLocation = self.locationManager.location {
-                            self.saveLocationsData(locations: [currentLocation], eventTime: now)
-                            self.LAST_DATA = currentLocation
-                            if self.CONFIG.debug { print(LocationsSensor.TAG, "Get a new location data due to data expiration") }
-                        }
-                    }
-                }else{
-                    if let currentLocation = self.locationManager.location {
-                        self.saveLocationsData(locations: [currentLocation], eventTime: now)
-                        self.LAST_DATA = currentLocation
-                        if self.CONFIG.debug { print(LocationsSensor.TAG, "Get a new location data ") }
-                    }else{
-                        if self.CONFIG.debug { print(LocationsSensor.TAG, "Location data is lost") }
-                    }
-                }
+            self.timer = Timer.scheduledTimer(withTimeInterval: CONFIG.frequencyGps,
+                                              repeats: true,
+                                              block: { (timer) in
+                self.saveLocationData();
             });
         }
+        
+        self.notificationCenter.post(name: .actionAwareLocationsStart, object: nil)
     }
     
     
     public override func stop() {
         if CONFIG.debug { print(LocationsSensor.TAG,"Stop location services") }
         self.stopLocationServices()
-        self.notificationCenter.post(name: .actionAwareLocationStop, object: nil)
         if let t = self.timer {
             t.invalidate()
             self.timer = nil
         }
+        self.notificationCenter.post(name: .actionAwareLocationsStop, object: nil)
     }
     
     public override func sync(force: Bool = false) {
@@ -209,9 +273,17 @@ public class LocationsSensor: AwareSensor{
             enging.startSync(LocationsData.TABLE_NAME, LocationsData.self, DbSyncConfig().apply(closure: { config in
                 config.debug = CONFIG.debug
             }))
+            self.notificationCenter.post(name: .actionAwareLocationsSync,
+                                         object: nil)
         }
-        self.notificationCenter.post(name: .actionAwareLocationSync,
-                                     object: nil)
+
+    }
+    
+    public func set(label:String) {
+        self.CONFIG.label = label
+        self.notificationCenter.post(name: .actionAwareLocationsSetLabel,
+                                     object: nil,
+                                     userInfo:[LocationsSensor.EXTRA_LABEL:label])
     }
     
     func startLocationServices(){
@@ -244,25 +316,64 @@ public class LocationsSensor: AwareSensor{
             }
         }
         
-        locationManager.startUpdatingLocation()
-        locationManager.startMonitoringVisits()
-        locationManager.startMonitoringSignificantLocationChanges()
-        locationManager.startUpdatingHeading()
-        if let uwRegions = self.CONFIG.regions{
-            for uwRegion in uwRegions {
-                locationManager.startMonitoring(for: uwRegion)
-            }
+        if self.CONFIG.statusGps {
+            locationManager.startUpdatingLocation()
+            locationManager.startMonitoringSignificantLocationChanges()
+        }
+        if self.CONFIG.statusLocationVisit{
+            locationManager.startMonitoringVisits()
+        }
+        // locationManager.startUpdatingHeading()
+        for region in self.CONFIG.regions {
+            locationManager.startMonitoring(for: region)
         }
     }
     
     func stopLocationServices(){
-        locationManager.stopUpdatingLocation()
-        locationManager.stopUpdatingHeading()
-        locationManager.stopMonitoringSignificantLocationChanges()
-        locationManager.stopMonitoringVisits()
-        if let uwRegions = self.CONFIG.regions{
-            for uwRegion in uwRegions {
-                locationManager.stopMonitoring(for: uwRegion)
+        if self.CONFIG.statusGps {
+            locationManager.stopUpdatingLocation()
+            locationManager.stopMonitoringSignificantLocationChanges()
+        }
+        if self.CONFIG.statusLocationVisit{
+            locationManager.stopMonitoringVisits()
+        }
+        // locationManager.stopUpdatingHeading()
+        for region in self.CONFIG.regions {
+            locationManager.stopMonitoring(for: region)
+        }
+    }
+    
+    func saveLocationData(){
+        let now = Date()
+        if let lastLocation = self.LAST_DATA {
+            // check timeout (second)
+            let currentTimestamp = now.timeIntervalSince1970
+            let lastLocationTimestamp = lastLocation.timestamp.timeIntervalSince1970
+            if self.CONFIG.debug {
+                print(LocationsSensor.TAG, "Passed         : \(Int64(currentTimestamp - lastLocationTimestamp)) second")
+                print(LocationsSensor.TAG, "Expiration Time: \(self.CONFIG.expirationTime) second")
+            }
+            if Int64(currentTimestamp - lastLocationTimestamp) < self.CONFIG.expirationTime {
+                if self.CONFIG.debug { print(LocationsSensor.TAG, "Save the last location data") }
+                self.saveLocations([lastLocation], eventTime: now)
+            }else{
+                // self.locationManager.requestLocation()
+                if let currentLocation = self.locationManager.location {
+                    self.saveLocations([currentLocation], eventTime: now)
+                    self.LAST_DATA = currentLocation
+                    if self.CONFIG.debug {
+                        print(LocationsSensor.TAG, "Get a new location data due to data expiration")
+                        print(LocationsSensor.TAG, currentLocation.debugDescription )
+                    }
+                }
+            }
+        }else{
+            if let currentLocation = self.locationManager.location {
+                self.saveLocations([currentLocation], eventTime: now)
+                self.LAST_DATA = currentLocation
+                if self.CONFIG.debug { print(LocationsSensor.TAG, "Get a new location data ") }
+            }else{
+                if self.CONFIG.debug { print(LocationsSensor.TAG, "Location data is lost") }
             }
         }
     }
@@ -271,12 +382,13 @@ public class LocationsSensor: AwareSensor{
 extension LocationsSensor: CLLocationManagerDelegate {
 
     public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if self.CONFIG.debug { print(#function) }
         switch status {
         case .authorizedAlways:
-            self.startLocationServices()
+            self.start()
             break
         case .authorizedWhenInUse:
-            self.startLocationServices()
+            self.start()
             break
         default:
             break
@@ -284,20 +396,23 @@ extension LocationsSensor: CLLocationManagerDelegate {
     }
     
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-
+        
         if locations.count > 0 {
+            if self.CONFIG.debug {
+                print(LocationsSensor.TAG, #function, locations.debugDescription )
+            }
             if self.LAST_DATA == nil {
-                self.saveLocationsData(locations: locations, eventTime: nil)
+                self.saveLocations(locations, eventTime: nil )
             }
             self.LAST_DATA = locations.last
         }
         
         if self.CONFIG.saveAll {
-            self.saveLocationsData(locations: locations, eventTime: nil)
+            self.saveLocations(locations, eventTime: nil)
         }
     }
     
-    func saveLocationsData(locations:[CLLocation], eventTime:Date?){
+    func saveLocations(_ locations:[CLLocation], eventTime:Date?){
         var dataArray = Array<LocationsData>()
         for location in locations{
             let data = LocationsData()
@@ -329,10 +444,103 @@ extension LocationsSensor: CLLocationManagerDelegate {
     
     public func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
         // TODO: development
+        if self.CONFIG.debug { print(visit) }
+        
+        let data = VisitData()
+        data.horizontalAccuracy = visit.horizontalAccuracy
+        data.latitude = visit.coordinate.latitude
+        data.longitude = visit.coordinate.longitude
+        data.departure = Int64(visit.departureDate.timeIntervalSince1970 * 1000.0)
+        data.arrival   = Int64(visit.arrivalDate.timeIntervalSince1970 * 1000.0)
+        
+        let location = CLLocation.init(latitude: visit.coordinate.latitude, longitude: visit.coordinate.longitude)
+        let geocoder = CLGeocoder.init()
+        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
+            if let e = error {
+                if self.CONFIG.debug { print(e) }
+            }
+            if let marks = placemarks {
+                if marks.count > 0 {
+                    let placemark = marks[0]
+                    let addressDict = placemark.addressDictionary
+                    if let uwAddDict = addressDict {
+                        if let uwAddressArray = uwAddDict["FormattedAddressLines"] as? Array<String>{
+                            data.address = uwAddressArray.joined(separator: ",")
+                        }
+                    }
+                    if let name = placemark.name{
+                        data.name = name
+                    }
+                }
+            }
+            
+            if self.CONFIG.debug { print(data) }
+            
+            if let engine = self.dbEngine {
+                engine.save(data, VisitData.TABLE_NAME)
+            }
+            if let observer = self.CONFIG.sensorObserver {
+                observer.onVisit(data: data)
+            }
+            self.notificationCenter.post(name: .actionAwareLocationsVisit,
+                                         object: nil,
+                                         userInfo: [LocationsSensor.EXTRA_LABEL:visit])
+        }
+        
+
     }
     
     public func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         // TODO: development
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        if self.CONFIG.debug { print(region) }
+        let data = GeofenceData()
+        data.onEntry = true
+        data.identifier = region.identifier
+        if let location = manager.location {
+            data.verticalAccuracy = location.verticalAccuracy
+            data.horizontalAccuracy = location.horizontalAccuracy
+            data.latitude = location.coordinate.latitude
+            data.longitude = location.coordinate.longitude
+        }
+        if let observer = self.CONFIG.sensorObserver {
+            observer.onEnterRegion(data:data)
+        }
+        if let engine = self.dbEngine {
+            engine.save(data, GeofenceData.TABLE_NAME)
+        }
+        self.notificationCenter.post(name: .actionAwareLocationsEnterRegion,
+                                     object: nil,
+                                     userInfo: [LocationsSensor.EXTRA_LABEL:region.identifier])
+        
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        if self.CONFIG.debug { print(region) }
+        let data = GeofenceData()
+        data.onExit = true
+        data.identifier = region.identifier
+        if let location = manager.location {
+            data.verticalAccuracy = location.verticalAccuracy
+            data.horizontalAccuracy = location.horizontalAccuracy
+            data.latitude = location.coordinate.latitude
+            data.longitude = location.coordinate.longitude
+        }
+        if let observer = self.CONFIG.sensorObserver {
+            observer.onExitRegion(data:data)
+        }
+        if let engine = self.dbEngine {
+            engine.save(data, GeofenceData.TABLE_NAME)
+        }
+        self.notificationCenter.post(name: .actionAwareLocationsExitRegion,
+                                     object: nil,
+                                     userInfo: [LocationsSensor.EXTRA_LABEL:region.identifier])
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        if self.CONFIG.debug { print(error) }
     }
     
 }

@@ -37,7 +37,7 @@ class Tests: XCTestCase {
         observer.openWeatherExpectation = openWeatherObserverExpect
         let sensor = OpenWeatherSensor.init(OpenWeatherSensor.Config().apply{ config in
             config.sensorObserver = observer
-            config.apiKey = "54e5dee2e6a2479e0cc963cf20f233cc"
+            config.apiKey = "YOUR_API_KEY"
             config.dbType = .REALM
         })
 
