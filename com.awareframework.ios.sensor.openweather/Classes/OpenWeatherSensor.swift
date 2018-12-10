@@ -126,6 +126,7 @@ public class OpenWeatherSensor: AwareSensor, LocationsObserver {
                 if let obj = json.dictionaryObject{
                     weatherData.setValuesForKeys(obj)
                     weatherData.unit = self.CONFIG.unit
+                    weatherData.label = self.CONFIG.label
                     if let engine = self.dbEngine {
                         engine.save(weatherData)
                     }
