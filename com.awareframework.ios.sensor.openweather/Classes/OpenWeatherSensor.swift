@@ -18,6 +18,8 @@ extension Notification.Name {
     public static let actionAwareOpenWeatherStop  = Notification.Name(OpenWeatherSensor.ACTION_AWARE_OPENWEATHER_STOP)
     public static let actionAwareOpenWeatherSync  = Notification.Name(OpenWeatherSensor.ACTION_AWARE_OPENWEATHER_SYNC)
     public static let actionAwareOpenWeatherSetLabel  = Notification.Name(OpenWeatherSensor.ACTION_AWARE_OPENWEATHER_SET_LABEL)
+    public static let actionAwareOpenWeatherSyncCompletion  = Notification.Name(OpenWeatherSensor.ACTION_AWARE_OPEN_WEATHER_SYNC_COMPLETION)
+    
 }
 
 extension OpenWeatherSensor{
@@ -28,6 +30,11 @@ extension OpenWeatherSensor{
     public static let ACTION_AWARE_OPENWEATHER_SET_LABEL = "com.awareframework.ios.sensor.openweather.ACTION_AWARE_OPENWEATHER_SET_LABEL"
     public static var EXTRA_LABEL  = "label"
     public static let TAG = "com.awareframework.ios.sensor.openweather"
+    
+    public static let ACTION_AWARE_OPEN_WEATHER_SYNC_COMPLETION = "com.awareframework.ios.sensor.openweather.SENSOR_SYNC_COMPLETION"
+    public static let EXTRA_STATUS = "status"
+    public static let EXTRA_ERROR = "error"
+
 }
 
 public protocol OpenWeatherObserver {
@@ -120,12 +127,12 @@ public class OpenWeatherSensor: AwareSensor, LocationsObserver {
                     weatherData.setValuesForKeys(obj)
                     weatherData.unit = self.CONFIG.unit
                     if let engine = self.dbEngine {
-                        engine.save(weatherData, OpenWeatherData.TABLE_NAME)
+                        engine.save(weatherData)
                     }
                     if let observer = self.CONFIG.sensorObserver {
                         observer.onDataChanged(data: weatherData)
                     }
-                    self.notificationCenter.post(name: .actionAwareOpenWeather, object: nil)
+                    self.notificationCenter.post(name: .actionAwareOpenWeather, object: self)
                 }
             } catch {
                 if self.CONFIG.debug { print(error) }
@@ -160,7 +167,7 @@ public class OpenWeatherSensor: AwareSensor, LocationsObserver {
                 config.frequencyGps = Double(self.CONFIG.interval) * 60.0
             })
             locationSensor?.start()
-            self.notificationCenter.post(name: .actionAwareOpenWeatherStart, object: nil)
+            self.notificationCenter.post(name: .actionAwareOpenWeatherStart, object: self)
         }
     }
     
@@ -168,7 +175,7 @@ public class OpenWeatherSensor: AwareSensor, LocationsObserver {
         if let lSensor = locationSensor{
             lSensor.stop()
             self.locationSensor = nil
-            self.notificationCenter.post(name: .actionAwareOpenWeatherStop, object: nil)
+            self.notificationCenter.post(name: .actionAwareOpenWeatherStop, object: self)
         }
     }
     
@@ -176,15 +183,25 @@ public class OpenWeatherSensor: AwareSensor, LocationsObserver {
         if let engine = self.dbEngine {
             engine.startSync(OpenWeatherData.TABLE_NAME, OpenWeatherData.self, DbSyncConfig.init().apply{config in
                 config.debug = self.CONFIG.debug
+                config.dispatchQueue = DispatchQueue(label: "com.awareframework.ios.sensor.openweather.sync.queue")
+                config.completionHandler = { (status, error) in
+                    var userInfo: Dictionary<String,Any> = [OpenWeatherSensor.EXTRA_STATUS :status]
+                    if let e = error {
+                        userInfo[OpenWeatherSensor.EXTRA_ERROR] = e
+                    }
+                    self.notificationCenter.post(name: .actionAwareOpenWeatherSyncCompletion ,
+                                                 object: self,
+                                                 userInfo:userInfo)
+                }
             })
-            self.notificationCenter.post(name: .actionAwareOpenWeatherSync, object: nil)
+            self.notificationCenter.post(name: .actionAwareOpenWeatherSync, object: self)
         }
     }
     
-    public func set(label:String){
+    public override func set(label:String){
         self.CONFIG.label = label
         self.notificationCenter.post(name: .actionAwareOpenWeatherSetLabel,
-                                     object: nil,
+                                     object: self,
                                      userInfo: [OpenWeatherSensor.EXTRA_LABEL:label])
     }
 }

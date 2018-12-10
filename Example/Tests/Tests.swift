@@ -41,13 +41,17 @@ class Tests: XCTestCase {
             config.dbType = .REALM
         })
 
+        if let engine = sensor.dbEngine {
+            engine.removeAll(OpenWeatherData.self)
+        }
+        
         let openWeatherStorageExpect = expectation(description: "OpenWeather storage")
         
         let obs = NotificationCenter.default.addObserver(forName: Notification.Name.actionAwareOpenWeather,
                                                          object: nil,
                                                          queue: .main) { (notification) in
             if let engine = sensor.dbEngine {
-                if let results = engine.fetch(OpenWeatherData.TABLE_NAME, OpenWeatherData.self, nil) as? Results<Object>{
+                if let results = engine.fetch(OpenWeatherData.self, nil) as? Results<Object>{
                     print(results)
                     openWeatherStorageExpect.fulfill()
                     XCTAssertEqual(results.count, 1)
@@ -189,4 +193,71 @@ class Tests: XCTestCase {
         XCTAssertEqual(dict["sunset"]  as? Int64, 0)
     }
     
+    func testSyncModule(){
+        #if targetEnvironment(simulator)
+        
+        print("This test requires a real OpenWeather.")
+        
+        #else
+        // success //
+        let sensor = OpenWeatherSensor.init(OpenWeatherSensor.Config().apply{ config in
+            config.debug = true
+            config.dbType = .REALM
+            config.dbHost = "node.awareframework.com:1001"
+            config.dbPath = "sync_db"
+        })
+        if let engine = sensor.dbEngine as? RealmEngine {
+            engine.removeAll(OpenWeatherData.self)
+            for _ in 0..<100 {
+                engine.save(OpenWeatherData())
+            }
+        }
+        let successExpectation = XCTestExpectation(description: "success sync")
+        let observer = NotificationCenter.default.addObserver(forName: Notification.Name.actionAwareOpenWeatherSyncCompletion,
+                                                              object: sensor, queue: .main) { (notification) in
+                                                                if let userInfo = notification.userInfo{
+                                                                    if let status = userInfo["status"] as? Bool {
+                                                                        if status == true {
+                                                                            successExpectation.fulfill()
+                                                                        }
+                                                                    }
+                                                                }
+        }
+        sensor.sync(force: true)
+        wait(for: [successExpectation], timeout: 20)
+        NotificationCenter.default.removeObserver(observer)
+        
+        ////////////////////////////////////
+        
+        // failure //
+        let sensor2 = OpenWeatherSensor.init(OpenWeatherSensor.Config().apply{ config in
+            config.debug = true
+            config.dbType = .REALM
+            config.dbHost = "node.awareframework.com.com" // wrong url
+            config.dbPath = "sync_db"
+        })
+        let failureExpectation = XCTestExpectation(description: "failure sync")
+        let failureObserver = NotificationCenter.default.addObserver(forName: Notification.Name.actionAwareOpenWeatherSyncCompletion,
+                                                                     object: sensor2, queue: .main) { (notification) in
+                                                                        if let userInfo = notification.userInfo{
+                                                                            if let status = userInfo["status"] as? Bool {
+                                                                                if status == false {
+                                                                                    failureExpectation.fulfill()
+                                                                                }
+                                                                            }
+                                                                        }
+        }
+        if let engine = sensor2.dbEngine as? RealmEngine {
+            engine.removeAll(OpenWeatherData.self)
+            for _ in 0..<100 {
+                engine.save(OpenWeatherData())
+            }
+        }
+        sensor2.sync(force: true)
+        wait(for: [failureExpectation], timeout: 20)
+        NotificationCenter.default.removeObserver(failureObserver)
+        
+        #endif
+    }
+
 }
