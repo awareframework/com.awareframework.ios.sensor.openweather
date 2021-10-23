@@ -10,7 +10,7 @@ import UIKit
 public class SensorManager: NSObject {
     
     /**
-     * Singleton:
+     * Singleton
      */
     public static let shared = SensorManager()
     private override init() {
@@ -110,15 +110,33 @@ public class SensorManager: NSObject {
         }
     }
     
+    public func startAllSensors(){
+        for sensor in sensors {
+            sensor.start()
+        }
+    }
+    
     public func stopAllSensors(){
         for sensor in sensors {
             sensor.stop()
         }
     }
     
-    public func startAllSensors(){
+    public func enableAllSensors(){
         for sensor in sensors {
-            sensor.start()
+            sensor.enable()
+        }
+    }
+    
+    public func disableAllSensors(){
+        for sensor in sensors {
+            sensor.disable()
+        }
+    }
+    
+    public func set(label:String){
+        for sensor in sensors {
+            sensor.set(label: label)
         }
     }
 }

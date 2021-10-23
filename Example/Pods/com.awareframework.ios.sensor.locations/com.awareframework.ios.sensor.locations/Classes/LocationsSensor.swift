@@ -21,6 +21,7 @@ extension Notification.Name {
     public static let actionAwareLocationsExitRegion = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATIONS_EXIT_REGION)
     
     public static let actionAwareLocationsVisit = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATIONS_VISIT)
+    public static let actionAwareLocationsHeadingChanged = Notification.Name(LocationsSensor.ACTION_AWARE_LOCATIONS_HEADING_CHANGED)
 }
 
 public protocol LocationsObserver {
@@ -28,7 +29,9 @@ public protocol LocationsObserver {
     func onExitRegion(data: GeofenceData)
     func onEnterRegion(data: GeofenceData)
     func onVisit(data: VisitData)
+    func onHeadingChanged(data: HeadingData)
 }
+
 
 public class LocationsSensor: AwareSensor{
 
@@ -42,10 +45,14 @@ public class LocationsSensor: AwareSensor{
     
     public var LAST_DATA:CLLocation?
     
+    public var LAST_HEADING:CLHeading?
+    
     /**
      * Fired event: New location available
      */
     public static let ACTION_AWARE_LOCATIONS = "com.awareframework.ios.sensor.locations"
+    
+    public static let ACTION_AWARE_LOCATIONS_HEADING_CHANGED = "ACTION_AWARE_LOCATIONS_HEADING_CHANGED"
     
     /**
      * Fired event: GPS location is active
@@ -93,6 +100,7 @@ public class LocationsSensor: AwareSensor{
         public var geoFences: String? = nil; // TODO: convert the value to CLRegion
         public var statusGps = true;
         public var statusLocationVisit = true;
+        public var statusHeading = true;
         public var frequencyGps:   Double = 180 {
             didSet{
                 if self.frequencyGps <= 0 {
@@ -134,6 +142,11 @@ public class LocationsSensor: AwareSensor{
         // var frequencyNetwork: Int = 300;
         // var minNetworkAccuracy: Int = 1500;
         
+        public override init() {
+            super.init()
+            dbPath = "aware_locations"
+        }
+        
         public override func set(config: Dictionary<String, Any>) {
             super.set(config: config)
             if let status = config["statusGps"] as? Bool {
@@ -158,6 +171,10 @@ public class LocationsSensor: AwareSensor{
             
             if let locationVisit = config["statusLocationVisit"] as? Bool {
                 statusLocationVisit = locationVisit
+            }
+            
+            if let heading = config["statusHeading"] as? Bool {
+                statusHeading = heading
             }
             
             /// CLRegion
@@ -372,10 +389,15 @@ public class LocationsSensor: AwareSensor{
             locationManager.startUpdatingLocation()
             locationManager.startMonitoringSignificantLocationChanges()
         }
+        
         if self.CONFIG.statusLocationVisit{
             locationManager.startMonitoringVisits()
         }
-        // locationManager.startUpdatingHeading()
+        
+        if self.CONFIG.statusHeading {
+            locationManager.startUpdatingHeading()
+        }
+        
         for region in self.CONFIG.regions {
             locationManager.startMonitoring(for: region)
         }
@@ -389,7 +411,11 @@ public class LocationsSensor: AwareSensor{
         if self.CONFIG.statusLocationVisit{
             locationManager.stopMonitoringVisits()
         }
-        // locationManager.stopUpdatingHeading()
+        
+        if self.CONFIG.statusHeading{
+             locationManager.stopUpdatingHeading()
+        }
+        
         for region in self.CONFIG.regions {
             locationManager.stopMonitoring(for: region)
         }
@@ -476,13 +502,12 @@ extension LocationsSensor: CLLocationManagerDelegate {
             data.altitude  = location.altitude
             data.latitude  = location.coordinate.latitude
             data.longitude = location.coordinate.longitude
-            data.course   = location.course
+            data.course    = location.course
             data.speed     = location.speed
             data.verticalAccuracy = location.verticalAccuracy
             data.horizontalAccuracy = location.horizontalAccuracy
-            if let floor = location.floor {
-                data.floor = floor.level as NSNumber
-            }
+            data.label = self.CONFIG.label
+            data.floor = location.floor?.level ?? 0
             dataArray.append(data)
             if let observer = CONFIG.sensorObserver {
                 observer.onLocationChanged(data: data)
@@ -504,6 +529,7 @@ extension LocationsSensor: CLLocationManagerDelegate {
         data.longitude = visit.coordinate.longitude
         data.departure = Int64(visit.departureDate.timeIntervalSince1970 * 1000.0)
         data.arrival   = Int64(visit.arrivalDate.timeIntervalSince1970 * 1000.0)
+        data.label     = self.CONFIG.label
         
         let location = CLLocation.init(latitude: visit.coordinate.latitude, longitude: visit.coordinate.longitude)
         let geocoder = CLGeocoder.init()
@@ -544,6 +570,27 @@ extension LocationsSensor: CLLocationManagerDelegate {
     
     public func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         // TODO: development
+        self.LAST_HEADING = newHeading
+        // needleView.transform = CGAffineTransform.init(rotationAngle: CGFloat(-newHeading.magneticHeading) * CGFloat.pi / 180)
+        let data = HeadingData()
+        data.magneticHeading = newHeading.magneticHeading
+        data.trueHeading = newHeading.trueHeading
+        data.headingAccuracy = newHeading.headingAccuracy
+        data.x = newHeading.x
+        data.y = newHeading.y
+        data.z = newHeading.z
+        data.timestamp = Int64(newHeading.timestamp.timeIntervalSince1970 * 1000.0)
+        if let observer = self.CONFIG.sensorObserver{
+            observer.onHeadingChanged(data: data)
+        }
+        self.notificationCenter.post(name: .actionAwareLocationsHeadingChanged,
+                                     object: self,
+                                     userInfo: [LocationsSensor.EXTRA_LABEL:newHeading])
+        if let engine = self.dbEngine {
+            engine.save(data)
+        }
+        if self.CONFIG.debug { print(data) }
+
     }
     
     public func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
@@ -557,6 +604,7 @@ extension LocationsSensor: CLLocationManagerDelegate {
             data.latitude = location.coordinate.latitude
             data.longitude = location.coordinate.longitude
         }
+        data.label = self.CONFIG.label
         if let observer = self.CONFIG.sensorObserver {
             observer.onEnterRegion(data:data)
         }
@@ -574,6 +622,7 @@ extension LocationsSensor: CLLocationManagerDelegate {
         let data = GeofenceData()
         data.onExit = true
         data.identifier = region.identifier
+        data.label = self.CONFIG.label
         if let location = manager.location {
             data.verticalAccuracy = location.verticalAccuracy
             data.horizontalAccuracy = location.horizontalAccuracy

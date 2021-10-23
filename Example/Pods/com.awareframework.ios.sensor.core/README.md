@@ -2,6 +2,7 @@
 
 [![CI Status](https://img.shields.io/travis/awareframework/com.awareframework.ios.sensor.core.svg?style=flat)](https://travis-ci.org/awareframework/com.awareframework.ios.sensor.core)
 [![Version](https://img.shields.io/cocoapods/v/com.awareframework.ios.sensor.core.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.core)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![License](https://img.shields.io/cocoapods/l/com.awareframework.ios.sensor.core.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.core)
 [![Platform](https://img.shields.io/cocoapods/p/com.awareframework.ios.sensor.core.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.core)
 
@@ -31,7 +32,7 @@ pod 'com.awareframework.ios.sensor.core'
 4. Sync local-database with remote-database
 
 ## Author
-Yuuki Nishiyama, yuuki.nishiyama@oulu.fi
+Yuuki Nishiyama, yuukin@iis.u-tokyo.ac.jp
 
 ## License
 Copyright (c) 2014 AWARE Mobile Context Instrumentation Middleware/Framework (http://www.awareframework.com)

@@ -22,7 +22,7 @@ pod 'com.awareframework.ios.sensor.locations'
 
 2. Import com.aware.ios.sensor.locations library into your source code.
 ```swift
-import com_awareframework_ios.sensor_locations
+import com_awareframework_ios_sensor_locations
 ```
 
 3. Open your project ( *.xcworkspace ) and add `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationWhenInUseUsageDescription` into Info.plist.
@@ -117,14 +117,14 @@ class Observer:LocationsObserver {
 
 ## Author
 
-Yuuki Nishiyama, yuuki.nishiyama@oulu.fi
+Yuuki Nishiyama, yuukin@iis.u-tokyo.ac.jp
 
 ## Related links
 - [ Apple | Core Location](https://developer.apple.com/documentation/corelocation)
 - [ Apple | CLLocation](https://developer.apple.com/documentation/corelocation/cllocation)
 
 ## License
-Copyright (c) 2018 AWARE Mobile Context Instrumentation Middleware/Framework (http://www.awareframework.com)
+Copyright (c) 2021 AWARE Mobile Context Instrumentation Middleware/Framework (http://www.awareframework.com)
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 

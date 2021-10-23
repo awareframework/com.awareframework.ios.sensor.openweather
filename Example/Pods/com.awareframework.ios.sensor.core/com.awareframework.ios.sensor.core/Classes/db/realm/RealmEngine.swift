@@ -18,9 +18,6 @@ open class RealmEngine: Engine {
     public override init(_ config: EngineConfig) {
         super.init(config)
         if let path = config.path {
-            // set RealmDB config
-            // var realmConfig = Realm.Configuration()
-            // set RealmDB location
             let documentDirFileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!
             realmConfig.fileURL = documentDirFileURL.appendingPathComponent(path+".realm")
             

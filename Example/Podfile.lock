@@ -1,28 +1,29 @@
 PODS:
-  - com.awareframework.ios.sensor.core (0.4.1):
+  - com.awareframework.ios.sensor.core (0.5.3):
     - Networking (~> 4.4.0)
-    - ReachabilitySwift (~> 4.3.0)
-    - RealmSwift (~> 3.12.0)
-    - SwiftyJSON (~> 4.2.0)
-  - com.awareframework.ios.sensor.locations (0.4.0):
-    - com.awareframework.ios.sensor.core (~> 0.4.1)
-  - com.awareframework.ios.sensor.openweather (0.2.3):
-    - com.awareframework.ios.sensor.core (~> 0.4.1)
-    - com.awareframework.ios.sensor.locations (~> 0.4.0)
+    - ReachabilitySwift (~> 5.0.0)
+    - Realm (~> 10.17.0)
+    - RealmSwift (~> 10.17.0)
+    - SwiftyJSON (~> 5.0.1)
+  - com.awareframework.ios.sensor.locations (0.5.4):
+    - com.awareframework.ios.sensor.core (~> 0.5.3)
+  - com.awareframework.ios.sensor.openweather (0.5.0):
+    - com.awareframework.ios.sensor.core (~> 0.5.3)
+    - com.awareframework.ios.sensor.locations (~> 0.5.4)
   - Networking (4.4.0)
-  - ReachabilitySwift (4.3.0)
-  - Realm (3.12.0):
-    - Realm/Headers (= 3.12.0)
-  - Realm/Headers (3.12.0)
-  - RealmSwift (3.12.0):
-    - Realm (= 3.12.0)
-  - SwiftyJSON (4.2.0)
+  - ReachabilitySwift (5.0.0)
+  - Realm (10.17.0):
+    - Realm/Headers (= 10.17.0)
+  - Realm/Headers (10.17.0)
+  - RealmSwift (10.17.0):
+    - Realm (= 10.17.0)
+  - SwiftyJSON (5.0.1)
 
 DEPENDENCIES:
   - com.awareframework.ios.sensor.openweather (from `../`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - com.awareframework.ios.sensor.core
     - com.awareframework.ios.sensor.locations
     - Networking
@@ -36,15 +37,15 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  com.awareframework.ios.sensor.core: fc027b31d6cd048f9e6e79ac8b5306067583a221
-  com.awareframework.ios.sensor.locations: 34b63c31f9519feedce9f59e6916dcc60bf724d6
-  com.awareframework.ios.sensor.openweather: fef9a057ae8eda6c4e2a00eab7f987cd87512139
+  com.awareframework.ios.sensor.core: d1be9c6d330396ae64247b268039cb4c7e4b358b
+  com.awareframework.ios.sensor.locations: c0d33d066c16c6c9577724bca64513dc72c09da2
+  com.awareframework.ios.sensor.openweather: 0220249b1f77adfff902195e96ed64cc50581f86
   Networking: cbef47ab030af248248c26a696adb88989b52ef1
-  ReachabilitySwift: 408477d1b6ed9779dba301953171e017c31241f3
-  Realm: cdaef23c4ddb36ab1ddffed23f5a7f3332fc5585
-  RealmSwift: 5576324033f0aa5ef1e0a839a3da2281dff47a7f
-  SwiftyJSON: c4bcba26dd9ec7a027fc8eade48e2c911f229e96
+  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
+  Realm: 9533276bd76f66aa2fd0d3ffe700c1f6023dcab6
+  RealmSwift: 57f5d59aa29852587aad1e861989e7af139894b5
+  SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
 
 PODFILE CHECKSUM: f4dee764bf6840fe867f210be68d518de09404e6
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.10.1

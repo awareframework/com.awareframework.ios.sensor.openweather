@@ -42,6 +42,7 @@ public protocol OpenWeatherObserver {
 }
 
 public class OpenWeatherSensor: AwareSensor, LocationsObserver {
+
     
     public var CONFIG:Config = Config()
     var locationSensor:LocationsSensor?
@@ -152,6 +153,9 @@ public class OpenWeatherSensor: AwareSensor, LocationsObserver {
         
     }
     
+    public func onHeadingChanged(data: HeadingData) {
+        
+    }
     
     public init(_ config:OpenWeatherSensor.Config) {
         super.init()

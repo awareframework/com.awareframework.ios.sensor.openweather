@@ -135,10 +135,14 @@ open class DbSyncManager {
         }
         
         if CONFIG.wifiOnly && force == false {
-            if let reachability = Reachability() {
-                if reachability.connection == .cellular || reachability.connection == .none {
+            do {
+                let reachability = try Reachability()
+                if reachability.connection == .cellular || reachability.connection == .unavailable {
                     return
                 }
+            }catch {
+                print(error)
+                return
             }
         }
         

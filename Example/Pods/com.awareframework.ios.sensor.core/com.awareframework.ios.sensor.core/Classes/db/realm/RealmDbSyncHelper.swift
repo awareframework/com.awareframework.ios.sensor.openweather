@@ -10,7 +10,6 @@ import Foundation
 import RealmSwift
 import SwiftyJSON
 
-
 open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionDataDelegate, URLSessionTaskDelegate {
 
     // https://developer.apple.com/documentation/foundation/url_loading_system/downloading_files_in_the_background?language=objc
@@ -67,7 +66,17 @@ open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionD
                 if let unwrappedCandidates = self.engine.fetch(self.objectType, self.filter) as? Results<Object>{
                     
                     if self.config.debug {
-                         print("[thread][sync start] \(unwrappedCandidates.count)")
+                        print("AWARE::Core", self.tableName, "Data count = \(unwrappedCandidates.count)")
+                    }
+                    
+                    if unwrappedCandidates.count == 0 {
+                        if let callback = self.completion {
+                            DispatchQueue.main.async {
+                                callback(true, nil)
+                            }
+                        }
+                        print("AWARE::Core", self.tableName, "A sync process is done: No Data")
+                        return
                     }
                     
                     var dataArray = Array<Dictionary<String, Any>>()
@@ -137,7 +146,7 @@ open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionD
                 completionHandler(URLSession.ResponseDisposition.allow);
             }else{
                 completionHandler(URLSession.ResponseDisposition.cancel);
-                if config.debug { print("\( tableName )=>\(response)") }
+                if config.debug { print("AWARE::Core","\( tableName )=>\(response)") }
                 // print("\( config.table! )=>\(httpResponse.statusCode)")
             }
         }
@@ -155,7 +164,7 @@ open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionD
         var responseState = false
         
         if let unwrappedError = error {
-            if config.debug { print("failed: \(unwrappedError)") }
+            if config.debug { print("AWARE::Core","failed: \(unwrappedError)") }
         }else{
             /**
              * TODO: this is an error handler
@@ -176,7 +185,7 @@ open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionD
                 }
             }catch {
                 if ( config.debug ) {
-                    print("[\(tableName)]: Error: A JSON convert error: \(error)")
+                    print("AWARE::Core","[\(tableName)]: Error: A JSON convert error: \(error)")
                 }
                 // An upload task is done correctly.
                 responseState = true
@@ -186,13 +195,13 @@ open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionD
         let response = String.init(data: receivedData, encoding: .utf8)
         if let unwrappedResponse = response{
             if self.config.debug {
-                print("[Server Response][\(self.tableName)][\(self.host)]", unwrappedResponse)
+                print("AWARE::Core","[Server Response][\(self.tableName)][\(self.host)]", unwrappedResponse)
             }
         }
         
         if (responseState){
             if config.debug {
-                print("[\(tableName)] Success: A sync task is done correctly.")
+                print("AWARE::Core","[\(tableName)] Success: A sync task is done correctly.")
             }
             
             session.finishTasksAndInvalidate()
@@ -213,7 +222,7 @@ open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionD
         if responseState {
             // A sync process is succeed
             if endFlag {
-                if config.debug { print("[\(tableName)] All sync tasks is done!!!") }
+                if config.debug { print("AWARE::Core","A sync process (\(tableName)) is done!") }
                 if let callback = self.completion {
                     DispatchQueue.main.async {
                         callback(true, error)
@@ -222,7 +231,7 @@ open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionD
                     print("self.completion is `nil`")
                 }
             }else{
-                if config.debug { print("[\(tableName)] A sync task is done. Execute a next sync task.") }
+                if config.debug { print("AWARE::Core","A sync task(\(tableName)) is done. Execute a next sync task.") }
                 // Continue the sync-process
 //                Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { (timer) in
 //                    self.run()
@@ -239,7 +248,7 @@ open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionD
             }
         }else{
             //A sync process is failed
-            if config.debug { print("[\(tableName)] A sync task is faild.") }
+            if config.debug { print("AWARE::Core","A sync task (\(tableName)) is faild.") }
             if let callback = self.completion {
                 DispatchQueue.main.async {
                     callback(false, error)
@@ -252,13 +261,13 @@ open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionD
     open func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         /// show progress of an upload process
         if config.debug {
-            print("\(task.taskIdentifier): \( NSString(format: "%.2f",Double(totalBytesSent)/Double(totalBytesExpectedToSend)*100.0))%")
+            print("AWARE::Core","\(task.taskIdentifier): \( NSString(format: "%.2f",Double(totalBytesSent)/Double(totalBytesExpectedToSend)*100.0))%")
         }
     }
     
     open func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         if config.debug{
-            print("\(#function):\(dataTask.taskIdentifier)")
+            print("AWARE::Core","\(#function):\(dataTask.taskIdentifier)")
         }
         self.receivedData.append(data)
     }
@@ -267,7 +276,7 @@ open class RealmDbSyncHelper:URLSessionDataTask, URLSessionDelegate, URLSessionD
         if let session = self.urlSession {
             session.getAllTasks { (sessionTasks) in
                 for task in sessionTasks{
-                    if self.config.debug { print("[\(task.taskIdentifier)] session task is canceled.") }
+                    if self.config.debug { print("AWARE::Core","[\(task.taskIdentifier)] session task is canceled.") }
                     task.cancel()
                 }
             }
