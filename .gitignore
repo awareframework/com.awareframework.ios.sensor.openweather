@@ -36,3 +36,8 @@ Carthage/Build
 #
 Example/Pods
 Example/Podfile.lock
+
+.build
+Packages
+.swiftpm
+.*.sw?

@@ -1,16 +1,33 @@
 # AWARE: Open Weather
 
-[![CI Status](https://img.shields.io/travis/awareframework/com.awareframework.ios.sensor.openweather.svg?style=flat)](https://travis-ci.org/awareframework/com.awareframework.ios.sensor.openweather)
-[![Version](https://img.shields.io/cocoapods/v/com.awareframework.ios.sensor.openweather.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.openweather)
-[![License](https://img.shields.io/cocoapods/l/com.awareframework.ios.sensor.openweather.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.openweather)
-[![Platform](https://img.shields.io/cocoapods/p/com.awareframework.ios.sensor.openweather.svg?style=flat)](https://cocoapods.org/pods/com.awareframework.ios.sensor.openweather)
+[![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg)](https://github.com/apple/swift-package-manager)
+
 
 The Open Weather plugin allows us to collect weather information based on your location. The weather data comes from Open Weather API. For using the API, you need to prepare your API KEY on [https://openweathermap.org/api](https://openweathermap.org/api).
 
 ## Requirements
-iOS 10 or later
+iOS 13 or later
 
 ## Installation
+
+You can integrate this framework into your project via Swift Package Manager (SwiftPM) or CocoaPods.
+
+### SwiftPM
+1. Open Package Manager Windows
+    * Open `Xcode` -> Select `Menu Bar` -> `File` -> `App Package Dependencies...` 
+
+2. Find the package using the manager
+    * Select `Search Package URL` and type `git@github.com:awareframework/com.awareframework.ios.sensor.openweather.git`
+
+3. Import the package into your target.
+
+4. com_aware_ios_sensor_openweather  library into your source code.
+```swift
+import com_awareframework_ios_sensor_openweather
+```
+
+### CocoaPods
+
 com.awareframework.ios.sensor.openweather is available through [CocoaPods](https://cocoapods.org). 
 
 1. To install it, simply add the following line to your Podfile:
@@ -114,7 +131,7 @@ class Observer:OpenWeatherObserver{
 
 ## Author
 
-Yuuki Nishiyama, yuukin@iis.u-tokyo.ac.jp
+Yuuki Nishiyama (The University of Tokyo), nishiyama@csis.u-tokyo.ac.jp
 
 ## License
 
