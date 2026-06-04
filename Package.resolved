@@ -1,46 +1,37 @@
 {
-  "originHash" : "e56a2be37b32b4ab58c2ace9e5bc22ba921593695011f499921b3529b1e2a6c9",
+  "originHash" : "c60dac2bdb32d6b93dfddcb440e49dff0651f84b4f236bea02c0ff916edc2104",
   "pins" : [
     {
-      "identity" : "com.awareframework.ios.sensor.core",
+      "identity" : "com.awareframework.ios.core",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:awareframework/com.awareframework.ios.sensor.core.git",
+      "location" : "https://github.com/awareframework/com.awareframework.ios.core.git",
       "state" : {
-        "revision" : "77f519945e3574c1d2da2ba80205064da49ef884",
-        "version" : "0.7.7"
+        "revision" : "7d0c08213468420d623c2e2e6879e155d7e378d2",
+        "version" : "1.1.0"
       }
     },
     {
-      "identity" : "com.awareframework.ios.sensor.locations",
+      "identity" : "grdb.swift",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:awareframework/com.awareframework.ios.sensor.locations.git",
+      "location" : "https://github.com/groue/GRDB.swift.git",
       "state" : {
-        "revision" : "f4473ff19de3d055fbe23f7b65f972451b9c14fd",
-        "version" : "0.7.2"
+        "revision" : "9ed8c8457e00ff9c7aedb3bf213f20a2cfdf509e",
+        "version" : "7.11.0"
       }
     },
     {
-      "identity" : "realm-core",
+      "identity" : "reachability.swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/realm/realm-core.git",
+      "location" : "https://github.com/ashleymills/Reachability.swift.git",
       "state" : {
-        "revision" : "15493076ad9fef22c16cc64cbfbf9e5b65c385f9",
-        "version" : "20.1.0"
-      }
-    },
-    {
-      "identity" : "realm-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "git@github.com:realm/realm-swift.git",
-      "state" : {
-        "revision" : "bae6c4be7df169fdb047d0ad63f902c1e2665e83",
-        "version" : "20.0.1"
+        "revision" : "21d1dc412cfecbe6e34f1f4c4eb88d3f912654a6",
+        "version" : "5.2.4"
       }
     },
     {
       "identity" : "swiftyjson",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:SwiftyJSON/SwiftyJSON.git",
+      "location" : "https://github.com/SwiftyJSON/SwiftyJSON.git",
       "state" : {
         "revision" : "af76cf3ef710b6ca5f8c05f3a31307d44a3c5828",
         "version" : "5.0.2"
