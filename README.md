@@ -21,7 +21,7 @@ You can integrate this framework into your project via Swift Package Manager (Sw
 
 3. Import the package into your target.
 
-4. com_aware_ios_sensor_openweather  library into your source code.
+4. Import com.awareframework.ios.sensor.openweather library into your source code.
 ```swift
 import com_awareframework_ios_sensor_openweather
 ```
@@ -56,7 +56,7 @@ Class to hold the configuration of the sensor.
 
 ### Fired Broadcasts
 
-+ `OpenWeatherSensor.ACTION_AWARE_OPENWEATHER` fired when gyroscope saved data to db after the period ends.
++ `OpenWeatherSensor.ACTION_AWARE_OPENWEATHER` fired when new weather data is saved to db.
 
 ### Received Broadcasts
 
@@ -71,30 +71,30 @@ Class to hold the configuration of the sensor.
 
 Contains the raw sensor data.
 
-|Field | Type | Description|
-|----- | ---- | -----------|
-|city           | String | weather's city                       |
-|temperature	| Double | current atmospheric temperature      |
-|temperatureMax | Double | forecast highest temperature         |
-|temperatureMin | Double | forecast lowest temperature          |
-|unit           | String | measurement unit (metric, imperial)  |
-|humidity       | Double | forecast humidity percentage         |
-|pressure       | Double | atmospheric pressure                 |
-|windSpeed      | Double | wind's speed in m/s                  |
-|windDegrees    | Double | wind's direction                     |
-|cloudiness     | Double | percent amount of clouds in the sky  |
-|rain           | Double | amount of rain in past hour, in millimeters |
-|snow           | Double | amount of snow in past hour, in millimeters |
-|sunrise        | Double | timestamp of sunrise                 |
-|sunset         | Double | timestamp of sunset                  |
-|weatherIconId  | Int    | icon ID from OpenWeather             |
-|weatherDescription | String | forecast description             |
-| label     | String | Customizable label. Useful for data calibration or traceability |
-| deviceId  | String | AWARE device UUID                                               |
-| label     | String | Customizable label. Useful for data calibration or traceability |
-| timestamp | Int64   | unixtime milliseconds since 1970         |
-| timezone  | Int    | Raw timezone offset of the device         |
-| os        | String | Operating system of the device (e.g., ios)|
+| Field              | Type   | Description                                                     |
+| ------------------ | ------ | --------------------------------------------------------------- |
+| city               | String | weather's city                                                  |
+| temperature        | Double | current atmospheric temperature                                 |
+| temperatureMax     | Double | forecast highest temperature                                    |
+| temperatureMin     | Double | forecast lowest temperature                                     |
+| unit               | String | measurement unit (metric, imperial)                             |
+| humidity           | Double | forecast humidity percentage                                    |
+| pressure           | Double | atmospheric pressure                                            |
+| windSpeed          | Double | wind's speed in m/s                                             |
+| windDegrees        | Double | wind's direction                                                |
+| cloudiness         | Double | percent amount of clouds in the sky                             |
+| rain               | Double | amount of rain in past hour, in millimeters                     |
+| snow               | Double | amount of snow in past hour, in millimeters                     |
+| sunrise            | Int64  | Unix timestamp of sunrise                                       |
+| sunset             | Int64  | Unix timestamp of sunset                                        |
+| weatherIconId      | Int    | icon ID from OpenWeather                                        |
+| weatherDescription | String | forecast description                                            |
+| label              | String | Customizable label. Useful for data calibration or traceability |
+| deviceId           | String | AWARE device UUID                                               |
+| timestamp          | Int64  | unixtime milliseconds since 1970                                |
+| timezone           | Int    | Raw timezone offset of the device                               |
+| os                 | String | Operating system of the device (e.g., ios)                      |
+| jsonVersion        | Int    | JSON schema version                                             |
 
 
 ## Example usage

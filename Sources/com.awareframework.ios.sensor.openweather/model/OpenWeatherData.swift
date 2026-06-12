@@ -10,7 +10,7 @@ public struct OpenWeatherData: BaseDbModelSQLite {
     public var timezone: Int = AwareUtils.getTimeZone()
     public var os: String = "iOS"
     public var jsonVersion: Int = 1
-    public static let databaseTableName = "openWeatherData"
+    public static let databaseTableName = "ios_open_weather"
     public static let TABLE_NAME = databaseTableName
 
     public var city: String = ""

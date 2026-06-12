@@ -197,7 +197,7 @@ public class OpenWeatherSensor: AwareSensor {
         
         public override init() {
             super.init()
-            dbPath = "aware_openweather"
+            dbPath = "aware_open_weather"
             dbTableName = OpenWeatherData.TABLE_NAME
         }
         
@@ -269,6 +269,9 @@ public class OpenWeatherSensor: AwareSensor {
         self.CONFIG = config
         self.initializeDbEngine(config: config)
         self.initializeTable()
+        super.syncConfig = DbSyncConfig().apply { c in
+            c.dispatchQueue = DispatchQueue(label: "com.awareframework.ios.sensor.openweather.sync.queue")
+        }
         if config.debug { print(OpenWeatherSensor.TAG,"OpenWeather sensor is created.") }
     }
     
@@ -294,22 +297,15 @@ public class OpenWeatherSensor: AwareSensor {
     }
     
     public override func sync(force: Bool = false) {
-        if let engine = self.dbEngine {
-            engine.startSync(DbSyncConfig.init().apply{config in
-                config.debug = self.CONFIG.debug
-                config.dispatchQueue = DispatchQueue(label: "com.awareframework.ios.sensor.openweather.sync.queue")
-                config.completionHandler = { (status, error) in
-                    var userInfo: Dictionary<String,Any> = [OpenWeatherSensor.EXTRA_STATUS :status]
-                    if let e = error {
-                        userInfo[OpenWeatherSensor.EXTRA_ERROR] = e
-                    }
-                    self.notificationCenter.post(name: .actionAwareOpenWeatherSyncCompletion ,
-                                                 object: self,
-                                                 userInfo:userInfo)
-                }
-            })
-            self.notificationCenter.post(name: .actionAwareOpenWeatherSync, object: self)
+        guard let engine = self.dbEngine, let syncConfig = self.syncConfig else { return }
+        syncConfig.debug = self.CONFIG.debug
+        syncConfig.completionHandler = { (status, error) in
+            var userInfo: Dictionary<String,Any> = [OpenWeatherSensor.EXTRA_STATUS: status]
+            if let e = error { userInfo[OpenWeatherSensor.EXTRA_ERROR] = e }
+            self.notificationCenter.post(name: .actionAwareOpenWeatherSyncCompletion, object: self, userInfo: userInfo)
         }
+        engine.startSync(syncConfig)
+        self.notificationCenter.post(name: .actionAwareOpenWeatherSync, object: self)
     }
     
     public override func set(label:String){
