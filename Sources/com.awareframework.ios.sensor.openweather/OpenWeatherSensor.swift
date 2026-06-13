@@ -247,6 +247,7 @@ public class OpenWeatherSensor: AwareSensor {
             do {
                 let json = try JSON.init(data: data)
                 var weatherData = OpenWeatherData()
+                weatherData.timestamp = Int64(Date().timeIntervalSince1970 * 1000)
                 if let obj = json.dictionaryObject{
                     weatherData.setValuesForKeys(obj)
                     weatherData.unit = self.CONFIG.unit
