@@ -76,6 +76,7 @@ final class OpenWeatherLocationProvider: NSObject, CLLocationManagerDelegate {
     private let locationHandler: (OpenWeatherLocationData) -> Void
     private var timer: Timer?
     private var lastLocation: CLLocation?
+    private var hasRequestedAlwaysAuthorization = false
 
     init(interval: TimeInterval, debug: Bool, locationHandler: @escaping (OpenWeatherLocationData) -> Void) {
         self.interval = interval
@@ -89,20 +90,17 @@ final class OpenWeatherLocationProvider: NSObject, CLLocationManagerDelegate {
         switch CLLocationManager.authorizationStatus() {
         case .notDetermined:
             if debug { print(OpenWeatherSensor.TAG, "Location service is not authorized. Send an authorization request.") }
-            locationManager.requestAlwaysAuthorization()
+            locationManager.requestWhenInUseAuthorization()
             return
         case .restricted, .denied:
             if debug { print(OpenWeatherSensor.TAG, "Location service is restricted or denied. Please check the location setting from Settings.app.") }
             return
-        case .authorizedWhenInUse, .authorizedAlways:
+        case .authorizedWhenInUse:
+            requestAlwaysAuthorizationIfNeeded()
+        case .authorizedAlways:
             break
         @unknown default:
             break
-        }
-
-        guard CLLocationManager.locationServicesEnabled() else {
-            if debug { print(OpenWeatherSensor.TAG, "Location services are not enabled.") }
-            return
         }
 
         startLocationServices()
@@ -142,9 +140,18 @@ final class OpenWeatherLocationProvider: NSObject, CLLocationManagerDelegate {
         locationHandler(OpenWeatherLocationData(location: location, eventTime: eventTime))
     }
 
+    private func requestAlwaysAuthorizationIfNeeded() {
+        guard !hasRequestedAlwaysAuthorization else { return }
+        hasRequestedAlwaysAuthorization = true
+        locationManager.requestAlwaysAuthorization()
+    }
+
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
-        case .authorizedAlways, .authorizedWhenInUse:
+        case .authorizedAlways:
+            start()
+        case .authorizedWhenInUse:
+            requestAlwaysAuthorizationIfNeeded()
             start()
         default:
             break
