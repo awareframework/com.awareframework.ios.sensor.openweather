@@ -14,7 +14,7 @@ You can integrate this framework into your project via Swift Package Manager (Sw
 
 ### SwiftPM
 1. Open Package Manager Windows
-    * Open `Xcode` -> Select `Menu Bar` -> `File` -> `App Package Dependencies...` 
+    * Open `Xcode` -> Select `Menu Bar` -> `File` -> `App Package Dependencies...`
 
 2. Find the package using the manager
     * Select `Search Package URL` and type `git@github.com:awareframework/com.awareframework.ios.sensor.openweather.git`
@@ -26,11 +26,11 @@ You can integrate this framework into your project via Swift Package Manager (Sw
 import com_awareframework_ios_sensor_openweather
 ```
 
-## Public functions
+## Public Functions
 
 ### OpenWeatherSensor
 
-+ `init(config:OpenWeatherSensor.Config?)` : Initializes the open weather sensor with the optional configuration.
++ `init(config:OpenWeatherSensor.Config?)`: Initializes the open weather sensor with the optional configuration.
 + `start()`: Starts the open weather sensor with the optional configuration.
 + `stop()`: Stops the service.
 
@@ -39,24 +39,25 @@ import com_awareframework_ios_sensor_openweather
 Class to hold the configuration of the sensor.
 
 #### Fields
+
 + `sensorObserver: OpenWeatherObserver`: Callback for live data updates.
-* `interval: Int`: How frequently to fetch weather information (in minutes), (default = 60)
-* `units: String`: imperial or metric (default = "metric")
-* `apiKey: String`: OpenWeather API key. Get your free API key from [openweathermap.org](https://openweathermap.org/api) (default = `null`)
-+ `enabled: Boolean` Sensor is enabled or not. (default = `false`)
-+ `debug: Boolean` enable/disable logging to Xcode console. (default = `false`)
-+ `label: String` Label for the data. (default = "")
-+ `deviceId: String` Id of the device that will be associated with the events and the sensor. (default = "")
-+ `dbEncryptionKey` Encryption key for the database. (default = `null`)
-+ `dbType: Engine` Which db engine to use for saving data. (default = `Engine.DatabaseType.NONE`)
-+ `dbPath: String` Path of the database. (default = "aware_openweather")
-+ `dbHost: String` Host for syncing the database. (default = `null`)
++ `sampleIntervalSeconds: Int`: How frequently to fetch weather information, in seconds. (default = `900`)
++ `units: String`: imperial or metric (default = `"metric"`)
++ `apiKey: String`: OpenWeather API key. Get your free API key from [openweathermap.org](https://openweathermap.org/api) (default = `nil`)
++ `enabled: Bool`: Sensor is enabled or not. (default = `false`)
++ `debug: Bool`: Enable/disable logging. (default = `false`)
++ `label: String`: Label for the data. (default = `""`)
++ `deviceId: String`: Id of the device that will be associated with the events and the sensor. (default = `""`)
++ `dbEncryptionKey: String?`: Encryption key for the database. (default = `nil`)
++ `dbType: DatabaseType`: Which db engine to use for saving data. (default = `.none`)
++ `dbPath: String`: Path of the database. (default = `"aware_openweather"`)
++ `dbHost: String?`: Host for syncing the database. (default = `nil`)
 
 ## Broadcasts
 
 ### Fired Broadcasts
 
-+ `OpenWeatherSensor.ACTION_AWARE_OPENWEATHER` fired when new weather data is saved to db.
++ `OpenWeatherSensor.ACTION_AWARE_OPENWEATHER`: fired when new weather data is saved to db.
 
 ### Received Broadcasts
 
@@ -97,10 +98,10 @@ Contains the raw sensor data.
 | jsonVersion        | Int    | JSON schema version                                             |
 
 
-## Example usage
+## Example Usage
 ```swift
-openWeather = OpenWeatherSensor.init(OpenWeatherSensor.Config().apply{config in
-    config.interval = 15 // 15min
+openWeather = OpenWeatherSensor.init(OpenWeatherSensor.Config().apply { config in
+    config.sampleIntervalSeconds = 900
     config.apiKey   = "YOUR_API_KEY"
     config.sensorObserver = Observer()
 })

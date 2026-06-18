@@ -128,42 +128,42 @@ class Tests: XCTestCase {
     }
     
     func testConfig(){
-        let interval = 30 // min
+        let sampleIntervalSeconds = 30
         let apiKey   = "http://openweathermap.org/"
         let unit     = "imperial"   // metric or imperial
-        let config:Dictionary<String,Any> = ["interval":interval, "apiKey":apiKey, "unit":unit]
+        let config:Dictionary<String,Any> = ["sampleIntervalSeconds":sampleIntervalSeconds, "apiKey":apiKey, "unit":unit]
         
         // default
         var sensor = OpenWeatherSensor()
-        XCTAssertEqual(sensor.CONFIG.interval, 15)
+        XCTAssertEqual(sensor.CONFIG.sampleIntervalSeconds, 900)
         XCTAssertEqual(sensor.CONFIG.apiKey, nil)
         XCTAssertEqual(sensor.CONFIG.unit, "metric")
         
         // apply
         sensor = OpenWeatherSensor.init(OpenWeatherSensor.Config().apply{config in
-            config.interval = interval
+            config.sampleIntervalSeconds = sampleIntervalSeconds
             config.apiKey = apiKey
             config.unit = unit
         })
-        XCTAssertEqual(sensor.CONFIG.interval, interval)
+        XCTAssertEqual(sensor.CONFIG.sampleIntervalSeconds, sampleIntervalSeconds)
         XCTAssertEqual(sensor.CONFIG.apiKey,   apiKey)
         XCTAssertEqual(sensor.CONFIG.unit,     unit)
         
         // init with dictionary
         sensor = OpenWeatherSensor.init(OpenWeatherSensor.Config(config))
-        XCTAssertEqual(sensor.CONFIG.interval, interval)
+        XCTAssertEqual(sensor.CONFIG.sampleIntervalSeconds, sampleIntervalSeconds)
         XCTAssertEqual(sensor.CONFIG.apiKey,   apiKey)
         XCTAssertEqual(sensor.CONFIG.unit,     unit)
         
         // set
         sensor = OpenWeatherSensor()
         sensor.CONFIG.set(config: config)
-        XCTAssertEqual(sensor.CONFIG.interval, interval)
+        XCTAssertEqual(sensor.CONFIG.sampleIntervalSeconds, sampleIntervalSeconds)
         XCTAssertEqual(sensor.CONFIG.apiKey,   apiKey)
         XCTAssertEqual(sensor.CONFIG.unit,     unit)
         
-        sensor.CONFIG.interval = -4
-        XCTAssertEqual(sensor.CONFIG.interval, 30)
+        sensor.CONFIG.sampleIntervalSeconds = -4
+        XCTAssertEqual(sensor.CONFIG.sampleIntervalSeconds, 30)
         
         sensor.CONFIG.unit = "hoge"
         XCTAssertEqual(sensor.CONFIG.unit, "imperial")

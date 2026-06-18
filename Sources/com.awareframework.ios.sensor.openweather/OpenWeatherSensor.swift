@@ -71,15 +71,15 @@ public struct OpenWeatherLocationData {
 
 final class OpenWeatherLocationProvider: NSObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
-    private let interval: TimeInterval
+    private let sampleIntervalSeconds: TimeInterval
     private let debug: Bool
     private let locationHandler: (OpenWeatherLocationData) -> Void
     private var timer: Timer?
     private var lastLocation: CLLocation?
     private var hasRequestedAlwaysAuthorization = false
 
-    init(interval: TimeInterval, debug: Bool, locationHandler: @escaping (OpenWeatherLocationData) -> Void) {
-        self.interval = interval
+    init(sampleIntervalSeconds: TimeInterval, debug: Bool, locationHandler: @escaping (OpenWeatherLocationData) -> Void) {
+        self.sampleIntervalSeconds = sampleIntervalSeconds
         self.debug = debug
         self.locationHandler = locationHandler
         super.init()
@@ -106,7 +106,7 @@ final class OpenWeatherLocationProvider: NSObject, CLLocationManagerDelegate {
         startLocationServices()
 
         if timer == nil {
-            timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+            timer = Timer.scheduledTimer(withTimeInterval: sampleIntervalSeconds, repeats: true) { [weak self] _ in
                 self?.publishLatestLocation()
             }
         }
@@ -177,13 +177,13 @@ public class OpenWeatherSensor: AwareSensor {
     public class Config:SensorConfig {
         
         public var sensorObserver:OpenWeatherObserver?
-        public var interval:Int = 15 // min
+        public var sampleIntervalSeconds:Int = 900
         {
             didSet{
-                if self.interval < 1 {
-                    print("[OpenWeatherSensor][Illegal Parameter] The 'interval' value has to be gratter than 0.",
-                          "This parameter ('\(self.interval)') is ignored.")
-                    self.interval = oldValue
+                if self.sampleIntervalSeconds < 1 {
+                    print("[OpenWeatherSensor][Illegal Parameter] The 'sampleIntervalSeconds' value has to be gratter than 0.",
+                          "This parameter ('\(self.sampleIntervalSeconds)') is ignored.")
+                    self.sampleIntervalSeconds = oldValue
                 }
             }
         }
@@ -211,8 +211,8 @@ public class OpenWeatherSensor: AwareSensor {
         public override func set(config: Dictionary<String, Any>) {
             super.set(config: config)
             
-            if let intervalMin = config["interval"] as? Int {
-                self.interval = intervalMin
+            if let sampleIntervalSeconds = config["sampleIntervalSeconds"] as? Int {
+                self.sampleIntervalSeconds = sampleIntervalSeconds
             }
             
             if let api = config["apiKey"] as? String {
@@ -286,7 +286,7 @@ public class OpenWeatherSensor: AwareSensor {
     public override func start() {
         if self.locationProvider == nil {
             locationProvider = OpenWeatherLocationProvider(
-                interval: Double(self.CONFIG.interval) * 60.0,
+                sampleIntervalSeconds: Double(self.CONFIG.sampleIntervalSeconds),
                 debug: self.CONFIG.debug
             ) { [weak self] location in
                 self?.onLocationChanged(data: location)
