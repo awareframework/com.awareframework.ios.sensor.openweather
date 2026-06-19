@@ -116,6 +116,12 @@ class Observer:OpenWeatherObserver{
 }
 ```
 
+## Related Links
+
+- [Core Location | Apple Developer Documentation](https://developer.apple.com/documentation/corelocation)
+- [CLLocationManager | Apple Developer Documentation](https://developer.apple.com/documentation/corelocation/cllocationmanager)
+- [URLSession | Apple Developer Documentation](https://developer.apple.com/documentation/foundation/urlsession)
+
 ## Author
 
 Yuuki Nishiyama (The University of Tokyo), nishiyama@csis.u-tokyo.ac.jp
