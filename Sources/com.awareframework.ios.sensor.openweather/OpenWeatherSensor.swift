@@ -87,7 +87,7 @@ final class OpenWeatherLocationProvider: NSObject, CLLocationManagerDelegate {
     }
 
     func start() {
-        switch CLLocationManager.authorizationStatus() {
+        switch locationManager.authorizationStatus {
         case .notDetermined:
             if debug { print(OpenWeatherSensor.TAG, "Location service is not authorized. Send an authorization request.") }
             locationManager.requestWhenInUseAuthorization()
@@ -336,7 +336,7 @@ public class OpenWeatherSensor: AwareSensor {
     }
 }
 
-public class OpenWeatherApi: URLSessionDataTask, URLSessionDelegate, URLSessionDataDelegate, URLSessionTaskDelegate {
+public final class OpenWeatherApi: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSessionTaskDelegate {
     
     var receivedData:Data = Data()
     var urlSession:URLSession?
