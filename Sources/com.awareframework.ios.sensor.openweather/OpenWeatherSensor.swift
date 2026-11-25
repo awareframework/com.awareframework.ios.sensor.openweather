@@ -247,6 +247,7 @@ public class OpenWeatherSensor: AwareSensor {
             return
         }
         
+        self.openWeatherApi?.cancel()  // only the latest location's weather is saved
         self.openWeatherApi = OpenWeatherApi.init(longitude: location.longitude,
                                                   latitude:  location.latitude,
                                                   config: self.CONFIG)
@@ -297,6 +298,8 @@ public class OpenWeatherSensor: AwareSensor {
     }
     
     public override func stop() {
+        openWeatherApi?.cancel()
+        openWeatherApi = nil
         if let provider = locationProvider{
             provider.stop()
             self.locationProvider = nil
@@ -336,18 +339,38 @@ public class OpenWeatherSensor: AwareSensor {
     }
 }
 
-public final class OpenWeatherApi: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSessionTaskDelegate {
-    
-    var receivedData:Data = Data()
-    var urlSession:URLSession?
+/// Fetches the current weather of a location from OpenWeatherMap.
+///
+/// Requests use one shared, ordinary session. They used to create a background session with the same
+/// identifier for every request; a new one invalidated the previous one, and creating a task in the
+/// invalidated session threw an Objective-C exception (SIGABRT), e.g. when the sensor restarted.
+/// A request takes seconds, so a background session brings nothing.
+public final class OpenWeatherApi: NSObject {
+
+    static let sharedSession: URLSession = {
+        let config = URLSessionConfiguration.default
+        config.allowsCellularAccess = true
+        config.timeoutIntervalForRequest = 30
+        config.timeoutIntervalForResource = 30
+        config.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        return URLSession(configuration: config)
+    }()
+
     var longitude:Int = 0
     var latitude:Int  = 0
     var apiKey:String = ""
     var unit:String   = ""
     var debug = false
-    var complition:((_ result:Data) -> ())? = nil
-    
-    public init(longitude:Double, latitude:Double, config:OpenWeatherSensor.Config) {
+    private let session: URLSession
+    /// Main queue only
+    private var task: URLSessionDataTask?
+
+    public convenience init(longitude:Double, latitude:Double, config:OpenWeatherSensor.Config) {
+        self.init(longitude: longitude, latitude: latitude, config: config, session: Self.sharedSession)
+    }
+
+    init(longitude:Double, latitude:Double, config:OpenWeatherSensor.Config, session: URLSession) {
+        self.session = session
         super.init()
         self.latitude = Int(latitude)
         self.longitude = Int(longitude)
@@ -357,76 +380,73 @@ public final class OpenWeatherApi: NSObject, URLSessionDelegate, URLSessionDataD
         self.unit = config.unit
         self.debug = config.debug
     }
-    
+
+    /// Requests the weather. `completionHandler` is called on the main queue with the body of a
+    /// successful (2xx) response; it is not called when the request fails or is cancelled.
+    /// A new request cancels the previous one of this object.
     public func getWeatherData(completionHandler: @escaping (_ result:Data) -> ()){
-        
-        self.complition = completionHandler
-        self.urlSession = {
-            let sessionConfig = URLSessionConfiguration.background(withIdentifier: "com.awareframework.ios.sensor.openweather.identifier.getdata")
-            sessionConfig.allowsCellularAccess = true
-            // sessionConfig.sharedContainerIdentifier = "com.awareframework.ios.sensor.openweather.identifier"
-            sessionConfig.timeoutIntervalForRequest = 30
-            sessionConfig.timeoutIntervalForResource = 30
-            sessionConfig.httpMaximumConnectionsPerHost = 5
-            sessionConfig.isDiscretionary = false
-            return URLSession(configuration: sessionConfig, delegate: self, delegateQueue: .main)
-        }()
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { self.getWeatherData(completionHandler: completionHandler) }
+            return
+        }
+        guard let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?lat=\(self.latitude)&lon=\(self.longitude)&appid=\(self.apiKey)&units=\(self.unit)") else {
+            return
+        }
+        var request = URLRequest(url: url)
+        request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        request.timeoutInterval = 30
+        request.httpMethod = "GET"
+        request.allowsCellularAccess = true
 
-        let url = URL.init(string: "https://api.openweathermap.org/data/2.5/weather?lat=\(self.latitude)&lon=\(self.longitude)&appid=\(self.apiKey)&units=\(self.unit)")
-        if let unwrappedUrl = url, let session = self.urlSession {
-            var request = URLRequest.init(url: unwrappedUrl)
-            request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
-            request.timeoutInterval = 30
-            request.httpMethod = "GET"
-            request.allowsCellularAccess = true
-            session.getAllTasks { (tasks) in
-                for task in tasks {
-                    task.cancel()
+        task?.cancel()
+        let debug = self.debug
+        // Ask iOS for time to finish the request if the app is suspended meanwhile (in the background
+        // the request is made while location updates keep the app running). Main queue only.
+        var backgroundTask = UIBackgroundTaskIdentifier.invalid
+        let endBackgroundTask = {
+            guard backgroundTask != .invalid else { return }
+            UIApplication.shared.endBackgroundTask(backgroundTask)
+            backgroundTask = .invalid
+        }
+        var newTask: URLSessionDataTask?
+        newTask = session.dataTask(with: request) { [weak self] data, response, error in
+            DispatchQueue.main.async {
+                endBackgroundTask()
+                if let self, self.task === newTask { self.task = nil }
+                if let error = error {
+                    if debug, (error as NSError).code != NSURLErrorCancelled {
+                        print(OpenWeatherSensor.TAG, "failed: \(error)")
+                    }
+                    return
                 }
-                let task = session.dataTask(with: request)
-                task.resume()
+                guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode),
+                      let data = data else {
+                    if debug {
+                        print(OpenWeatherSensor.TAG, "ResponseDisposition.cancel",
+                              (response as? HTTPURLResponse)?.statusCode ?? -1)
+                    }
+                    return
+                }
+                if debug { print(OpenWeatherSensor.TAG, "ResponseDisposition.allow") }
+                completionHandler(data)
             }
         }
+        task = newTask
+        backgroundTask = UIApplication.shared.beginBackgroundTask(withName: "OpenWeather request") {
+            // Out of time: give the request up (its completion then ends the background task too)
+            newTask?.cancel()
+            endBackgroundTask()
+        }
+        newTask?.resume()
     }
 
-    
-    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response:
-        URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
-        // if debug{ print( OpenWeatherSensor.TAG, #function) }
-        if let httpResponse = response as? HTTPURLResponse{
-            if(httpResponse.statusCode >= 200 && httpResponse.statusCode < 300){
-                completionHandler(URLSession.ResponseDisposition.allow);
-                if debug{ print( OpenWeatherSensor.TAG, "ResponseDisposition.allow") }
-            }else{
-                completionHandler(URLSession.ResponseDisposition.cancel);
-                if debug{ print( OpenWeatherSensor.TAG, "ResponseDisposition.cancel") }
-            }
+    /// Cancels the running request, if any. Its completion handler is not called.
+    public func cancel() {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { self.cancel() }
+            return
         }
+        task?.cancel()
+        task = nil
     }
-
-    public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
-        // if debug{ print( OpenWeatherSensor.TAG, print(#function)) }
-        if let e = error {
-            print(e)
-        }
-    }
-
-    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        self.receivedData.append(data)
-    }
-    
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        // if debug{ print( OpenWeatherSensor.TAG, print(#function)) }
-        if let unwrappedError = error {
-            if debug{ print( OpenWeatherSensor.TAG, "failed: \(unwrappedError)") }
-            session.invalidateAndCancel()
-        }else{
-            session.finishTasksAndInvalidate()
-            if let handler = self.complition{
-                handler( Data.init(receivedData) )
-            }
-        }
-        receivedData = Data()
-    }
-    
 }
